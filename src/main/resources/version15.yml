@@ -1,0 +1,605 @@
+types:
+  sbyte:
+    class: io.github.e9ae9933.aicd.modifier.NoelByte
+  byte:
+    class: io.github.e9ae9933.aicd.modifier.NoelUnsignedByte
+  short:
+    class: io.github.e9ae9933.aicd.modifier.NoelShort
+  ushort:
+    class: io.github.e9ae9933.aicd.modifier.NoelUnsignedShort
+  int:
+    class: io.github.e9ae9933.aicd.modifier.NoelInt
+  uint:
+    class: io.github.e9ae9933.aicd.modifier.NoelUnsignedInt
+  long:
+    class: io.github.e9ae9933.aicd.modifier.NoelLong
+  ulong:
+    class: io.github.e9ae9933.aicd.modifier.NoelUnsignedLong
+  float:
+    class: io.github.e9ae9933.aicd.modifier.NoelFloat
+  double:
+    class: io.github.e9ae9933.aicd.modifier.NoelDouble
+  bool:
+    class: io.github.e9ae9933.aicd.modifier.NoelBool
+  object:
+    class: io.github.e9ae9933.aicd.modifier.NoelObject
+  array:
+    class: io.github.e9ae9933.aicd.modifier.NoelArray
+  string:
+    class: io.github.e9ae9933.aicd.modifier.NoelString
+  pascal_string:
+    class: io.github.e9ae9933.aicd.modifier.NoelPascalString
+  dictionary:
+    class: io.github.e9ae9933.aicd.modifier.NoelMap
+  settings_shift:
+    class: io.github.e9ae9933.aicd.modifier.NoelSettingsShift
+  dynamic_array:
+    class: io.github.e9ae9933.aicd.modifier.NoelDynamicArray
+  dictionary_endsigned:
+    class: io.github.e9ae9933.aicd.modifier.NoelMapEndSigned
+  branch:
+    class: io.github.e9ae9933.aicd.modifier.NoelBranch
+  segment:
+    class: io.github.e9ae9933.aicd.modifier.NoelSegment
+  segment_shifted:
+    class: io.github.e9ae9933.aicd.modifier.NoelSegmentShifted
+  # start of non-native types
+  m2_ser_item:
+    types:
+      float1: float
+      int2: int
+  pr_egg_item:
+    types:
+      float1: float
+      byte2: byte
+      float3: float
+      float4: float
+  betoinfo:
+    types:
+      int1: int
+      int2: int
+      byte3: byte
+      float4: float
+      uint5: uint
+      uint6: uint
+      float7: float
+      float8: float
+      float9: float
+      uint10: uint
+  item_storage:
+    types:
+      a_grade:
+        type: array
+        arraytype: ushort
+        len: 5
+      newer: uint
+  rpi_vector:
+    types:
+      x: float
+      y_mmx_0_255: byte
+  recipe_dish:
+    types:
+      key: uint
+      recipe_key: pascal_string
+      cost_: ushort
+      calced_grade: byte
+      title_keys: string
+      o_use_ingredient_source:
+        type: dictionary
+        key: pascal_string
+        value: item_storage
+      o_effect:
+        type: dictionary
+        key: ushort
+        value: rpi_vector
+  direct_recipe:
+    types:
+      direct_recipe_sign_expected_0: byte
+      grade: byte
+      item_key: pascal_string
+  recipe_branch:
+    types:
+      cols:
+        type: branch
+        '0': direct_recipe
+        default: recipe
+  recipe_row:
+    types:
+      cols:
+        type: array
+        arraytype: recipe_branch
+        lensize: 1
+  recipe:
+    types:
+      rows:
+        type: array
+        arraytype: recipe_row
+        lensize: 1
+  recipe_with_created:
+    types:
+      created: uint
+      recipe: recipe
+  item:
+    types:
+      key: string
+      item: item_storage
+      # bool?
+      is_linked_food: byte
+  item_drop:
+    types:
+      key: string
+      x: float
+      y: float
+      flip: bool
+      count: byte
+      grade: byte
+  dish_in_stomach:
+    types:
+      recipe_id: uint
+      lvl01: float
+      bonused: bool
+      cost: float
+  use_item:
+    types:
+      item_cell: pascal_string
+      item_cell_sort: byte
+  use_item_branch:
+    types:
+      test_if_null:
+        type: branch
+        '0': byte
+        default: use_item
+  coin_data_sheet:
+    types:
+      key: string
+      a_get:
+        type: array
+        arraytype: uint
+        lensize: 4
+  summoner_data:
+    types:
+      1-defeated_in_session-2-summoner_is_night-sign: byte
+      sudden_level: byte
+      defeat_count: int
+      last_battle_index: int
+      night_calced: byte
+  weather_item:
+    types:
+      weather: uint
+      start_dlevel: short
+      desc_sp_key: pascal_string
+  store_entry:
+    types:
+      key: pascal_string
+      count: ushort
+      grade: byte
+      line_key: pascal_string
+  store_manager:
+    types:
+      key: string
+      store_manager_sign_expected_2: byte
+      need_summon_flush_: byte
+      entries:
+        type: array
+        arraytype: store_entry
+        lensize: 2
+  log_item:
+    types:
+      key: pascal_string
+      person: pascal_string
+#  map_icon_hiden_dpt:
+#    types:
+#      key: pascal_string
+#      x: ushort
+#      y:
+#        ushortd
+#  map_manager:
+#    types:
+#      key: string
+#      data_len: ushort
+#      sign_expected_7: byte
+#      a_visited:
+#        type: array
+#        arraytype: string
+#        lensize: 2
+#      o_marker:
+#        type: dictionary
+#        key: uint
+#        value: byte
+#      o_icon_hidden_dpt:
+#        type: dictionary
+#        key: string
+#        value: map_icon_hidden_dpt
+#      bytearray_2_len: uint
+
+
+  map_branch:
+    types:
+      branch:
+        type: branch
+        '0': byte
+        default: map_manager
+
+list:
+  # start of header.
+  header:
+    type: string
+    len: 76
+  save_version: byte
+  version: byte
+  playtime: uint
+  hp_noel: ushort
+  maxhp_noel: ushort
+  mp_noel: ushort
+  maxmp_noel: ushort
+  phase: ushort
+  whole_map_key: string
+  modified: double
+  memo: string
+  explore_timer: uint
+  # end of header.
+
+  # start of thumbnail.
+  thumbnail:
+    type: array
+    arraytype: byte
+    lensize: 4
+  # end of thumbnail.
+
+  # safe area memory
+  safe_area_memory: string
+
+  # first version
+  first_version: byte
+
+  # config
+  config_raw_data:
+    type: array
+    arraytype: byte
+    lensize: 4
+
+  # IN.getCurrentKeyAssignObject().getSaveString(null)
+  key_assign_raw_data:
+    type: array
+    arraytype: byte
+    lensize: 4
+
+  # M2D.curMap.key
+  curmap_key: string
+
+  cook_osf_segment:
+    type: segment_shifted
+    value:
+      type: dictionary
+      key: string
+      value: byte
+#  cook_osf_length: uint
+#  cook_osf_shift_begin:
+#    type: settings_shift
+#    shift: 97
+#  cook_osf_shift_expected_97: byte
+#  cook_osf:
+#    type: dictionary
+#    key: string
+#    value: byte
+#  cook_osf_shift_end:
+#    type: settings_shift
+#    shift: -97
+
+  # svstring_begin
+  sv_aflags_c_len: byte
+  sv_aflags_b_len: byte
+  sv_aflags_c:
+    type: dynamic_array
+    value: uint
+    len: sv_aflags_c_len
+  sv_aflags_b:
+    type: dynamic_array
+    value: uint
+    len: sv_aflags_b_len
+  # svstring_end
+
+  # PrNoel_begin
+  noel_sign_expected_6: byte
+  noel_x: ushort
+  noel_y_mbottom: ushort
+  noel_water_drunk: int
+  # noel ser
+  noel_ser:
+    type: array
+#    arraytype: m2_ser_item
+    arraytype:
+      type: object
+      types:
+        id: byte
+        af: float
+        maxt: int
+    lensize: 1
+  # EpManager
+  noel_ep_sign_expected_4: byte
+  noel_ep_ep: float
+  noel_ep_bt_exp_added: uint
+  noel_ep_bt_applied: uint
+  noel_ep_bt_orgasm: uint
+  noel_ep_a_total_exp:
+    type: array
+    arraytype: byte
+    lensize: 2
+  noel_ep_a_total_orgasmed:
+    type: array
+    arraytype: int
+    lensize: 2
+  noel_ep_o_situation_orgasmed:
+    type: array
+    lensize: 2
+    arraytype:
+      type: object
+      types:
+        key: string
+        value: uint
+#    key: string
+#    value: int
+  noel_ep_a_last_situation:
+    type: array
+    lensize: 2
+    arraytype: pascal_string
+  noel_ep_last_ex_count: uint
+  noel_ep_last_ex_multi_count: uint
+  noel_ep_pee_count: uint
+  noel_ep_o_egg_layed:
+    type: array
+    lensize: 2
+    arraytype:
+      type: object
+      types:
+        key: int
+        value: uint
+  noel_ep_orgasm_individual_count: uint
+  noel_ep_splash_lock: bool
+  # PrEggManager
+  noel_egg_egg_laying: byte
+  noel_egg_a_itm:
+    type: array
+    arraytype:
+      type: object
+      types:
+        val: float
+        categ: byte
+        val_absorbed: float
+        mp_hold_absorb_ratio: float
+    lensize: 1
+  # MpGageBreaker
+  noel_gage_damage: float
+  noel_gage_break_delay: ushort
+  noel_gage_breaked_0: byte
+  noel_gage_cured_0: byte
+  noel_gage_breaked_1: byte
+  noel_gage_cured_1: byte
+  noel_gage_breaked_2: byte
+  noel_gage_cured_2: byte
+  # SkillManager
+  noel_skill_o_sk:
+    type: dictionary_endsigned
+    key: ushort
+    value: byte
+  noel_skill_manage_box_current_tab: byte
+  noel_skill_manage_box_a_selected:
+    type: array
+    arraytype: ushort
+    lensize: 1
+  # UiBenchMenu
+  noel_bench_a_cmd_bitset: uint
+  noel_bench_several_flags: ushort
+  # M2PrSkill -> MagicSel
+  noel_magic_sign_expected_1:
+    type: byte
+  noel_magic_o_kind_data_array_of_all_obtained:
+    type: array
+    arraytype: ushort
+    lensize: 1
+  # BetobetoManager
+  noel_bb_sign_expected_5: byte
+  noel_bb_xors_rand_seed_0: uint
+  noel_bb_xors_rand_seed_1: uint
+  noel_bb_xors_rand_seed_2: uint
+  noel_bb_xors_rand_seed_3: uint
+  noel_bb_total_fill_count: int
+  noel_bb_a_thread_as_float:
+    type: array
+    arraytype: float
+    lensize: 1
+  noel_bb_a_info:
+    type: array
+    lensize: 1
+    arraytype:
+      type: object
+      types:
+        fill_id: int
+        thread: int
+        type: byte
+        power: float
+        col: uint
+        col2: uint
+        level: float
+        scale: float
+        jumprate: float
+        bloodreplacecol: uint
+  noel_bb_torned_count: byte
+  # it should be a bool. why?
+  noel_bb_wetten: byte
+  # Back to PRNoel
+  # yes there's 2 underslashes
+  noel_outfit_type__: byte
+  noel_pee_lock: byte
+
+  # RecipeManager Begin
+  recipe_data_length: uint
+  recipe_data_shift_expected_145_or_-111: byte
+  recipe_shift:
+    type: settings_shift
+    shift: -111
+  recipe_sign_expected_1: byte
+  recipe_o_dish_count: uint
+  # this is actually a map.
+  recipe_o_dish:
+    type: dynamic_array
+    value: recipe_dish
+    len: recipe_o_dish_count
+#  debug_arp_sz: ushort
+#  debug_arp_key: string
+#  debug_rwc: recipe_with_created
+  recipe_o_arp:
+    type: dictionary
+    key: string
+    value: recipe_with_created
+  recipe_shift_end:
+    type: settings_shift
+    shift: 111
+
+  # NelItem
+  item_shift_len: uint
+  item_shift_expected_131_or_-125: byte
+  item_shift:
+    type: settings_shift
+    shift: -125
+  item_sign_expected_6: byte
+  # inventory
+  item_inv_count: int
+  item_inv_hide_bottle_max: int
+  item_inv_row_max: int
+  item_inv_select_row_key: pascal_string
+  item_inv_sort_type: byte
+  item_inv_o_itm:
+    type: dynamic_array
+    value: item
+    len: item_inv_count
+  # precious
+  item_pcs_count: int
+  item_pcs_hide_bottle_max: int
+  item_pcs_row_max: int
+  item_pcs_select_row_key: pascal_string
+  item_pcs_sort_type: byte
+  item_pcs_o_itm:
+    type: dynamic_array
+    value: item
+    len: item_pcs_count
+  # enhancer
+  item_ehc_count: int
+  item_ehc_hide_bottle_max: int
+  item_ehc_row_max: int
+  item_ehc_select_row_key: pascal_string
+  item_ehc_sort_type: byte
+  item_ehc_o_itm:
+    type: dynamic_array
+    value: item
+    len: item_ehc_count
+  # house
+  item_hse_count: int
+  item_hse_hide_bottle_max: int
+  item_hse_row_max: int
+  item_hse_select_row_key: pascal_string
+  item_hse_sort_type: byte
+  item_hse_o_itm:
+    type: dynamic_array
+    value: item
+    len: item_hse_count
+  # dished
+  dishes:
+    type: array
+    arraytype: dish_in_stomach
+    lensize: 2
+  # reel
+  item_a_reel:
+    type: array
+    arraytype: byte
+    lensize: 2
+  item_a_obtainable_reel:
+    type: array
+    arraytype: byte
+    lensize: 2
+  item_o_drop:
+    type: array
+    arraytype: item_drop
+    lensize: 2
+  # usel
+  item_use_sign_expected_0: byte
+  item_use:
+    type: array
+    arraytype: use_item_branch
+    len: 8
+  item_shift_end:
+    type: settings_shift
+    shift: 125
+
+  # WholeMapManager
+  map_shift_len: uint
+  map_shift_expected_161_or_-95: byte
+  map_shift:
+    type: settings_shift
+    shift: -95
+  # todo
+  map_raw_data:
+    type: dynamic_array
+    value: byte
+    len: map_shift_len
+
+  map_shift_end:
+    type: settings_shift
+    shift: 95
+
+  # Coin storage
+  coin_o_data:
+    type: array
+    arraytype: coin_data_sheet
+    lensize: 4
+  coin_count_: uint
+
+  # NightController
+  night_sign_expected_6: byte
+  night_fade_deplevel: float
+  night_pre_dlevel: ushort
+  night_dlevel: ushort
+  night_o_summoner_data:
+    type: dictionary
+    key: pascal_string
+    value: summoner_data
+  night_last_battle_lp_key: pascal_string
+  night_?_expected_null: pascal_string
+  night_reel_obtained: byte
+  night_a_weather:
+    type: array
+    arraytype: weather_item
+    lensize: 2
+  night_dlevel_add: byte
+  night_first_battle_dlevel: byte
+  # StoreManager
+  store_sign_expected_1: byte
+  store_o_storage:
+    type: array
+    arraytype: store_manager
+    lensize: 1
+  # Nightingale
+  ntg_posx: float
+  ntg_posy: float
+  ntg_ag_r: float
+  ntg_appear_ratio: float
+  ntg_walk_around_flag_: bool
+  ntg_decided_key: pascal_string
+  ntg_a_not_exist_map:
+    type: array
+    arraytype: pascal_string
+    lensize: 2
+  # EvTextLog
+  ev_sign_expected_0: byte
+  ev_max_i: ushort
+  ev_use_ptr: ushort
+  ev_log_items:
+    type: dynamic_array
+    value: log_item
+    len: ev_max_i
+  # NelItem
+  # actually an array.
+  nelitems:
+    type: dictionary
+    key: ushort
+    value: byte
