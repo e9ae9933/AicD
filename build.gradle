@@ -24,5 +24,5 @@ test {
 }
 
 application{
-    mainClass='io.github.e9ae9933.client.Main'
+    mainClass='io.github.e9ae9933.aicd.client.Main'
 }

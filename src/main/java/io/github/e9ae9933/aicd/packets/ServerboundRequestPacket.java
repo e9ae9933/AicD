@@ -32,6 +32,9 @@ public class ServerboundRequestPacket extends Packet
 				return new ClientboundResponcePacket<>(Database.instance.getMods());
 			case BEPINEX:
 				return new ClientboundResponcePacket<>(Utils.ignoreExceptions(()->new URL("https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip")));
+			case ABOUT:
+//				return new ClientboundResponcePacket<>(Utils.ignoreExceptions(()->new URL("https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD%20%E8%AF%B4%E6%98%8E.html")));
+				return new ClientboundResponcePacket<>(Utils.ignoreExceptions(()->new URL("https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD_about.html")));
 		}
 		return new ClientboundRejectPacket("Unknown type: "+type);
 	}
@@ -40,5 +43,6 @@ public class ServerboundRequestPacket extends Packet
 	{
 		MODS,
 		BEPINEX,
+		ABOUT,
 	}
 }

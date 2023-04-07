@@ -124,14 +124,15 @@ public class ModGUI
 					protected void dialogInit()
 					{
 						super.dialogInit();
+						this.setResizable(false);
+						this.setSize(800,400);
+						this.setLocationRelativeTo(panel);
 //						this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 //						this.setLocationRelativeTo(panel);
 						this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 						Container panel=this.getContentPane();
 						panel.setLayout(null);
 						panel.setBounds(0,0,800,400);
-						this.setResizable(false);
-						this.setBounds(0,0,800,400);
 						JComboBox<String> box=new JComboBox<String>(new Vector<>(infos.stream().map(i->i.name+" "+i.version).collect(Collectors.toList())));
 						box.setFont(GUI.middleFont);
 						box.setBounds(150,50,500,36);
@@ -169,6 +170,7 @@ public class ModGUI
 				conn.addRequestProperty("user-agent","AicD");
 				conn.connect();
 				InputStream is=conn.getInputStream();
+				area.append(fixed("长度 "+conn.getContentLength()+"B"));
 				FileOutputStream fos=new FileOutputStream(file);
 				BufferedOutputStream bos=new BufferedOutputStream(fos);
 				int b;
@@ -326,7 +328,7 @@ public class ModGUI
 			box.setListData(new Vector<>(Arrays.stream(files).filter(File::isFile).map(mod -> new ModInfo(mod.getName(), mod)).collect(Collectors.toList())));
 			box.setEnabled(true);
 			cloud.setEnabled(true);
-			swc.setEnabled(true);
+//			swc.setEnabled(true);
 			area.append(fixed("刷新完成"));
 		}
 		catch (Exception e)

@@ -21,7 +21,7 @@ public class ServerboundVersionListPacket extends Packet
 	{
 		try
 		{
-			url = new URL("https://mua.sibaken.org/CN02/Public/AliceInCradle/Download");
+			url = new URL("https://mua.sibaken.org/CN01/Public/AliceInCradle_Latest");
 		} catch (MalformedURLException e)
 		{
 			e.printStackTrace();
@@ -30,13 +30,14 @@ public class ServerboundVersionListPacket extends Packet
 
 	public static synchronized void update()
 	{
-		if(System.currentTimeMillis()>=nextUpdate)
+		if(System.currentTimeMillis()>=nextUpdate&&(versionInfo==null||!Main.integrated))
 		{
-			nextUpdate=System.currentTimeMillis()+1000*60;
+			nextUpdate=System.currentTimeMillis()+1000*60*10;
 			try
 			{
 				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 				con.addRequestProperty("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
+				System.out.println("尝试访问 "+url.toString());
 				con.connect();
 				InputStream is=con.getInputStream();
 				ByteArrayOutputStream bos=new ByteArrayOutputStream();
@@ -55,7 +56,7 @@ public class ServerboundVersionListPacket extends Packet
 					String name=u.substring(u.lastIndexOf('/')+1/*,u.lastIndexOf('.')*/);
 					next.add(new VersionInfo(name,new URL("https://mua.sibaken.org"+u)));
 				}
-				System.out.println("updated "+ Main.gson.toJson(next));
+//				System.out.println("updated "+ Main.gson.toJson(next));
 				versionInfo=next;
 			}catch (Exception e)
 			{

@@ -15,8 +15,16 @@ public class SettingsGUI
 		JPanel panel=new JPanel();
 		panel.setBounds(0,0,1280,720);
 		panel.setLayout(null);
+
+
+		JLabel label=new JLabel("设置");
+		label.setBounds(0,0,1280,100);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setVerticalAlignment(SwingConstants.CENTER);
+		label.setFont(GUI.bigFont);
+		panel.add(label);
 		JTextField path=new JTextField();
-		path.setBounds(100,50,950,36);
+		path.setBounds(100,100,950,36);
 		path.setFont(GUI.middleFont);
 		try{path.setText(Utils.getGamePath(true).getAbsolutePath());}catch(Exception e){}
 		panel.add(path);
@@ -53,7 +61,7 @@ public class SettingsGUI
 		});
 
 		JButton button=new JButton("浏览");
-		button.setBounds(1108,50,72,36);
+		button.setBounds(1108,100,72,36);
 		button.setFont(GUI.middleFont);
 		panel.add(button);
 		JFileChooser fileChooser=new JFileChooser();
@@ -66,6 +74,15 @@ public class SettingsGUI
 			if(id==JFileChooser.APPROVE_OPTION)
 				path.setText(fileChooser.getSelectedFile().getAbsolutePath());
 		});
+
+		JLabel integrated=new JLabel();
+		integrated.setBounds(100,150,400,36);
+		if(io.github.e9ae9933.aicd.server.Main.integrated)
+			integrated.setText("连接到 本地服务端");
+		else
+			integrated.setText("连接到 云端服务端");
+		integrated.setFont(GUI.middleFont);
+		panel.add(integrated);
 		return panel;
 	}
 }

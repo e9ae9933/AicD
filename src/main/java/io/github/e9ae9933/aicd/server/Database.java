@@ -117,6 +117,7 @@ public class Database
 	}
 	public List<ModInfo> getMods()
 	{
+		checkIntegrated();
 		return new ArrayList<>(mods);
 	}
 	boolean isIntegrated()

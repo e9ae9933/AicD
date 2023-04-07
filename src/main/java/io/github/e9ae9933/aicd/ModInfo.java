@@ -20,9 +20,6 @@ public class ModInfo
 	@Override
 	public String toString()
 	{
-		if (name.endsWith(".dll"))
-			return "[√] " + name;
-		else
-			return "[×] " + name;
+		return name;
 	}
 }

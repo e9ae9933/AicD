@@ -34,14 +34,16 @@ public class GUI
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.setTitle("AicD");
+		frame.setLocationRelativeTo(null);
 
 		JTabbedPane pane=new JTabbedPane();
 		pane.setFont(middleFont);
-		pane.addTab("登录",loginGUI.panel);
+//		pane.addTab("登录",loginGUI.panel);
 		pane.addTab("下载",mainGUI.panel);
 		pane.addTab("模组",ModGUI.create(this,handler));
 		pane.addTab("设置",SettingsGUI.create());
-		pane.setSelectedIndex(1);
+		pane.addTab("说明",AboutGUI.create(handler));
+		pane.setSelectedIndex(3);
 		pane.setBounds(0,100,1280,720);
 
 		frame.setContentPane(pane);

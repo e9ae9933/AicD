@@ -1,3 +1,11 @@
+#
+# Data format for AIC data version 15
+# Big Endian
+# still in progress
+# todo: replace maps with arrays
+# Contributor: e9ae9933
+# Special thanks: NoelCornehl
+#
 types:
   sbyte:
     class: io.github.e9ae9933.aicd.modifier.NoelByte

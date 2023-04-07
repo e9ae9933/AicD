@@ -1,8 +1,11 @@
 package io.github.e9ae9933.aicd.client;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.e9ae9933.aicd.ModInfo;
+import io.github.e9ae9933.aicd.SocketHandler;
+import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.packets.*;
 
 import java.io.InputStream;
@@ -15,15 +18,22 @@ import java.util.List;
 public class Handler
 {
 	Socket socket;
-	void connect(String address,int port) throws Exception
+	String address;
+	SocketHandler handler;
+	int port;
+	void connect() throws Exception
 	{
 		socket=new Socket();
 		socket.setKeepAlive(true);
+		System.out.println("连接到 "+address+":"+port);
 		socket.connect(new InetSocketAddress(address,port));
+		handler=new SocketHandler(socket,true);
 	}
 	Handler(String address,int port) throws Exception
 	{
-		connect(address,port);
+		this.address=address;
+		this.port=port;
+		connect();
 	}
 	/*
 	For defend xiaotiancai
@@ -36,23 +46,32 @@ public class Handler
 	{
 		try
 		{
-			socket.getOutputStream().write(Main.gson.toJson(packet).getBytes(StandardCharsets.UTF_8));
-			InputStream is = socket.getInputStream();
-			while(is.available()==0&&socket.isConnected()&&!socket.isClosed());
-			byte[] b = new byte[is.available()];
-			is.read(b);
-			String s = new String(b, StandardCharsets.UTF_8);
-			System.out.println("s"+s);
-			JsonObject object = Main.gson.fromJson(s, JsonObject.class);
-			String type = object.get("packet_type").getAsString();
-			Class<?> clazz = Class.forName("io.github.e9ae9933.aicd.packets." + type);
-			if(typeToken!=null&&clazz.equals(typeToken.getRawType()))
-				return (Packet) Main.gson.fromJson(s,typeToken);
+			if(socket.isClosed()||!socket.isConnected()||socket.isOutputShutdown()||socket.isInputShutdown())
+			{
+				connect();
+			}
+			handler.sendPacket(packet);
+			Packet rt=null;
+			long end=System.currentTimeMillis();
+			end+=1000*15;
+			while((rt=handler.getPacket())==null)
+			{
+				if(System.currentTimeMillis()>end)
+					return new ClientboundRejectPacket("网络超时");
+				Thread.sleep(1);
+			}
+			// todo: shit-like casting
+			if(typeToken==null)
+				return rt;
 			else
-				return (Packet) Main.gson.fromJson(s, clazz);
+			{
+				Gson gson=Main.gson;
+				return (Packet) gson.fromJson(gson.toJson(rt),typeToken);
+			}
 		}
 		catch (Exception e)
 		{
+			Utils.ignoreExceptions(()->socket.close());
 			e.printStackTrace();
 			return new ClientboundRejectPacket("网络问题: "+e.toString());
 		}
@@ -78,5 +97,9 @@ public class Handler
 	Packet bepInEx()
 	{
 		return sendPacket(new ServerboundRequestPacket(ServerboundRequestPacket.Type.BEPINEX),new TypeToken<ClientboundResponcePacket<URL>>(){});
+	}
+	Packet aboutPage()
+	{
+		return sendPacket(new ServerboundRequestPacket(ServerboundRequestPacket.Type.ABOUT),new TypeToken<ClientboundResponcePacket<URL>>(){});
 	}
 }

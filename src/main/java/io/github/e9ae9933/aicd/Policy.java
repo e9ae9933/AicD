@@ -8,10 +8,13 @@ import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Policy
 {
+	public static String serverHost="43.138.30.10";
+	public static int serverPort=10051;
 	public static Gson gson=new GsonBuilder().registerTypeAdapterFactory(TypeAdapters.newFactory(Class.class, new TypeAdapter<Class>()
 	{
 		@Override
@@ -33,6 +36,22 @@ public class Policy
 			{
 				throw new IOException(e);
 			}
+		}
+	})).registerTypeAdapterFactory(TypeAdapters.newFactory(File.class, new TypeAdapter<File>()
+	{
+		@Override
+		public void write(JsonWriter out, File value) throws IOException
+		{
+			if(value==null)
+				out.nullValue();
+			else
+				out.value(value.getPath());
+		}
+
+		@Override
+		public File read(JsonReader in) throws IOException
+		{
+			return new File(in.nextString());
 		}
 	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().create();
 	public static boolean isUsernameValid(String s)

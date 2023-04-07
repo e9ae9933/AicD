@@ -28,7 +28,7 @@ public class MainGUI
 		panel.setLayout(null);
 
 
-		JLabel label=new JLabel("模组管理");
+		JLabel label=new JLabel("下载管理");
 		label.setBounds(0,0,1280,100);
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setVerticalAlignment(SwingConstants.CENTER);
@@ -63,6 +63,11 @@ public class MainGUI
 		run.setFont(GUI.middleFont);
 		run.setBounds(1108,250,72,36);
 		panel.add(run);
+
+		JLabel info=new JLabel("请先在左边选择要安装的版本");
+		info.setFont(GUI.middleFont);
+		info.setBounds(700,250,400,36);
+		panel.add(info);
 
 		JProgressBar total=new JProgressBar();
 		total.setMinimum(0);
