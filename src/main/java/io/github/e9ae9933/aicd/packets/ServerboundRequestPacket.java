@@ -1,5 +1,6 @@
 package io.github.e9ae9933.aicd.packets;
 
+import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.server.Database;
 
@@ -35,6 +36,8 @@ public class ServerboundRequestPacket extends Packet
 			case ABOUT:
 //				return new ClientboundResponcePacket<>(Utils.ignoreExceptions(()->new URL("https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD%20%E8%AF%B4%E6%98%8E.html")));
 				return new ClientboundResponcePacket<>(Utils.ignoreExceptions(()->new URL("https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD_about.html")));
+			case UPDATE:
+				return new ClientboundResponcePacket<>(new LatestVersion(Constants.version,Constants.versionCode,Utils.ignoreExceptions(()->new URL(Constants.versionUrl))));
 		}
 		return new ClientboundRejectPacket("Unknown type: "+type);
 	}
@@ -44,5 +47,19 @@ public class ServerboundRequestPacket extends Packet
 		MODS,
 		BEPINEX,
 		ABOUT,
+		UPDATE,
+	}
+	public class LatestVersion
+	{
+		public String version;
+		public int versionCode;
+		public URL url;
+
+		public LatestVersion(String version, int versionCode, URL url)
+		{
+			this.version = version;
+			this.versionCode = versionCode;
+			this.url = url;
+		}
 	}
 }

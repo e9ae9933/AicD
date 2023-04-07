@@ -102,4 +102,9 @@ public class Handler
 	{
 		return sendPacket(new ServerboundRequestPacket(ServerboundRequestPacket.Type.ABOUT),new TypeToken<ClientboundResponcePacket<URL>>(){});
 	}
+	ServerboundRequestPacket.LatestVersion getLatestVersion()
+	{
+		Packet packet=sendPacket(new ServerboundRequestPacket(ServerboundRequestPacket.Type.UPDATE),new TypeToken<ClientboundResponcePacket<ServerboundRequestPacket.LatestVersion>>(){});
+		return ((ClientboundResponcePacket<ServerboundRequestPacket.LatestVersion>)packet).data;
+	}
 }
