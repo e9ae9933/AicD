@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
 
 public class NoelSegment extends NoelElement
@@ -23,5 +25,17 @@ public class NoelSegment extends NoelElement
 		data.writeTo(buf);
 		b.putInt(buf.size());
 		b.putBytes(buf.getNBytes(buf.size()));
+	}
+	@Override
+	public Component createGUI()
+	{
+		JPanel panel=new JPanel();
+		panel.setLayout(null);
+		Component c=data.createGUI();
+		panel.setSize(c.getSize());
+		c.setLocation(0,0);
+		panel.add(c);
+		panel.setBorder(border);
+		return panel;
 	}
 }

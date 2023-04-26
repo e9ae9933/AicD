@@ -62,6 +62,7 @@ public class NoelObject extends NoelElement
 			hs[0] +=c.second.getHeight();
 			panel.add(c.second);
 		});
+		panel.setPreferredSize(panel.getSize());
 		return panel;
 	}
 }

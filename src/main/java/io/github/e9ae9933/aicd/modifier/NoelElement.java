@@ -1,6 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -9,6 +10,7 @@ public abstract class NoelElement
 {
 	//public String objectType=getClass().getCanonicalName();
 	protected static Font middleFont=new Font("宋体",Font.PLAIN,16);
+	protected static LineBorder border=new LineBorder(Color.BLACK);
 	public abstract void writeTo(NoelByteBuffer b);
 	public static NoelElement newInstance(Object o,NoelByteBuffer b,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
 	{

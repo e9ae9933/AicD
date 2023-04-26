@@ -1,5 +1,9 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -32,5 +36,48 @@ public class NoelString extends NoelElement
 	public String toString()
 	{
 		return data;
+	}
+
+	@Override
+	public Component createGUI()
+	{
+		JTextField field=new JTextField(data);
+		field.setFont(middleFont);
+		Runnable update=()->
+		{
+			field.setSize(field.getFontMetrics(middleFont).stringWidth(field.getText())+100,36);
+		};
+		update.run();
+		field.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void insertUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			void update()
+			{
+				String s=field.getText();
+				if(len==-1&&s.getBytes(StandardCharsets.UTF_8).length<65536||len==s.getBytes(StandardCharsets.UTF_8).length)
+				{
+					data=s;
+					update.run();
+					brilliant(field);
+				}
+				else
+					blunder(field);
+			}
+		});
+		return field;
 	}
 }
