@@ -1,7 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
-public interface NoelLongable
+public abstract class NoelLongable extends NoelElement
 {
-	public long getLong();
-	public void setLong(long l);
+	public abstract long getLong();
+	public abstract void setLong(long l);
 }

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class Policy
 {
-	public static String serverHost="43.138.30.10";
+	public static String serverHost="43.138.15.251";
 	public static int serverPort=10051;
 	public static Gson gson=new GsonBuilder().registerTypeAdapterFactory(TypeAdapters.newFactory(Class.class, new TypeAdapter<Class>()
 	{
@@ -53,7 +53,7 @@ public class Policy
 		{
 			return new File(in.nextString());
 		}
-	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().create();
+	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().create();
 	public static boolean isUsernameValid(String s)
 	{
 		if(s==null)

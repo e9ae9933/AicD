@@ -6,8 +6,8 @@ import java.util.Map;
 public class NoelString extends NoelElement
 {
 	int len;
-	String s;
-	public NoelString(NoelByteBuffer b, Map<String,Object> settings, Map<String,Type> knownTypes)
+	String data;
+	public NoelString(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
 	{
 		if(settings!=null)
 			len=Integer.parseInt(settings.getOrDefault("len",-1).toString());
@@ -18,12 +18,12 @@ public class NoelString extends NoelElement
 			length=Short.toUnsignedInt(b.getShort());
 		byte[] bytes=new byte[length];
 		b.getBytes(bytes);
-		s=new String(bytes, StandardCharsets.UTF_8);
+		data =new String(bytes, StandardCharsets.UTF_8);
 	}
 	@Override
 	public void writeTo(NoelByteBuffer b)
 	{
-		byte[] bytes=s.getBytes(StandardCharsets.UTF_8);
+		byte[] bytes= data.getBytes(StandardCharsets.UTF_8);
 		if(len==-1)
 			b.putShort((short) bytes.length);
 		b.putBytes(bytes);
@@ -31,6 +31,6 @@ public class NoelString extends NoelElement
 	@Override
 	public String toString()
 	{
-		return s;
+		return data;
 	}
 }

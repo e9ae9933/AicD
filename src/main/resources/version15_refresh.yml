@@ -1,0 +1,390 @@
+#
+# Data format for AIC data version 15
+# Big Endian
+# still in progress
+# todo: refresh
+# Team NyaPaint
+# Contributor: e9ae9933
+# Special thanks: NoelCornehl
+#
+types:
+  sbyte: io.github.e9ae9933.aicd.modifier.NoelByte
+  byte: io.github.e9ae9933.aicd.modifier.NoelUnsignedByte
+  short: io.github.e9ae9933.aicd.modifier.NoelShort
+  ushort: io.github.e9ae9933.aicd.modifier.NoelUnsignedShort
+  int: io.github.e9ae9933.aicd.modifier.NoelInt
+  uint: io.github.e9ae9933.aicd.modifier.NoelUnsignedInt
+  long: io.github.e9ae9933.aicd.modifier.NoelLong
+  ulong: io.github.e9ae9933.aicd.modifier.NoelUnsignedLong
+  float: io.github.e9ae9933.aicd.modifier.NoelFloat
+  double: io.github.e9ae9933.aicd.modifier.NoelDouble
+  bool: io.github.e9ae9933.aicd.modifier.NoelBool
+  object: io.github.e9ae9933.aicd.modifier.NoelObject
+  array: io.github.e9ae9933.aicd.modifier.NoelArray
+  string: io.github.e9ae9933.aicd.modifier.NoelString
+  pascal_string: io.github.e9ae9933.aicd.modifier.NoelPascalString
+  dynamic_array: io.github.e9ae9933.aicd.modifier.NoelDynamicArray
+  branch: io.github.e9ae9933.aicd.modifier.NoelBranch
+  segment: io.github.e9ae9933.aicd.modifier.NoelSegment
+  segment_shifted: io.github.e9ae9933.aicd.modifier.NoelSegmentShifted
+  array_endsigned: io.github.e9ae9933.aicd.modifier.NoelArrayEndsigned
+
+list:
+  type: object
+  types:
+    # start of header.
+    header:
+      type: string
+      len: 76
+    save_version: byte
+    version: byte
+    playtime: uint
+    hp_noel: ushort
+    maxhp_noel: ushort
+    mp_noel: ushort
+    maxmp_noel: ushort
+    phase: ushort
+    whole_map_key: string
+    modified: double
+    memo: string
+    explore_timer: uint
+    thumbnail:
+      type: array
+      value: byte
+      lensize: 4
+    safe_area_memory: string
+    first_version: byte
+    config_raw_data:
+      type: array
+      value: byte
+      lensize: 4
+    key_assign_raw_data:
+      type: array
+      value: byte
+      lensize: 4
+    curmap_key: string
+    cook_osf_segment:
+      type: segment_shifted
+      value:
+        type: array
+        lensize: 2
+        value:
+          type: object
+          types:
+            key: string
+            value: byte
+    sv_aflags_c_len: byte
+    sv_aflags_b_len: byte
+    sv_aflags_c:
+      type: dynamic_array
+      value: uint
+      len: sv_aflags_c_len
+    sv_aflags_b:
+      type: dynamic_array
+      value: uint
+      len: sv_aflags_b_len
+    # PrNoel_begin
+    noel_sign_expected_6: byte
+    noel_x: ushort
+    noel_y_mbottom: ushort
+    noel_water_drunk: int
+    noel_ser:
+      type: array
+      value:
+        type: object
+        types:
+          id: byte
+          af: float
+          maxt: int
+      lensize: 1
+    noel_ep_sign_expected_4: byte
+    noel_ep_ep: float
+    noel_ep_bt_exp_added: uint
+    noel_ep_bt_applied: uint
+    noel_ep_bt_orgasm: uint
+    noel_ep_a_total_exp:
+      type: array
+      value: byte
+      lensize: 2
+    noel_ep_a_total_orgasmed:
+      type: array
+      value: int
+      lensize: 2
+    noel_ep_o_situation_orgasmed:
+      type: array
+      lensize: 2
+      value:
+        type: object
+        types:
+          key: string
+          value: uint
+    noel_ep_a_last_situation:
+      type: array
+      lensize: 2
+      value: pascal_string
+    noel_ep_last_ex_count: uint
+    noel_ep_last_ex_multi_count: uint
+    noel_ep_pee_count: uint
+    noel_ep_o_egg_layed:
+      type: array
+      lensize: 2
+      value:
+        type: object
+        types:
+          key: int
+          value: uint
+    noel_ep_orgasm_individual_count: uint
+    noel_ep_splash_lock: bool
+    noel_egg_egg_laying: byte
+    noel_egg_a_itm:
+      type: array
+      lensize: 1
+      value:
+        type: object
+        types:
+          val: float
+          categ: byte
+          val_absorbed: float
+          mp_hold_absorb_ratio: float
+    # MpGageBreaker
+    noel_gage_damage: float
+    noel_gage_break_delay: ushort
+    noel_gage_breaked_0: byte
+    noel_gage_cured_0: byte
+    noel_gage_breaked_1: byte
+    noel_gage_cured_1: byte
+    noel_gage_breaked_2: byte
+    noel_gage_cured_2: byte
+    # SkillManager
+    noel_skill_o_sk:
+      type: array_endsigned
+      value:
+        type: object
+        types:
+          key: ushort
+          value: byte
+    noel_skill_manage_box_current_tab: byte
+    noel_skill_manage_box_a_selected:
+      type: array
+      value: ushort
+      lensize: 1
+    # UiBenchMenu
+    noel_bench_a_cmd_bitset: uint
+    noel_bench_several_flags: ushort
+    # M2PrSkill -> MagicSel
+    noel_magic_sign_expected_1:
+      type: byte
+    noel_magic_o_kind_data_array_of_all_obtained:
+      type: array
+      value: ushort
+      lensize: 1
+    # BetobetoManager
+    noel_bb_sign_expected_5: byte
+    noel_bb_xors_rand_seed_0: uint
+    noel_bb_xors_rand_seed_1: uint
+    noel_bb_xors_rand_seed_2: uint
+    noel_bb_xors_rand_seed_3: uint
+    noel_bb_total_fill_count: int
+    noel_bb_a_thread_as_float:
+      type: array
+      value: float
+      lensize: 1
+    noel_bb_a_info:
+      type: array
+      lensize: 1
+      value:
+        type: object
+        types:
+          fill_id: int
+          thread: int
+          type: byte
+          power: float
+          col: uint
+          col2: uint
+          level: float
+          scale: float
+          jumprate: float
+          bloodreplacecol: uint
+    noel_bb_torned_count: byte
+    # it should be a bool. why?
+    noel_bb_wetten: byte
+    # Back to PRNoel
+    # yes there's 2 underslashes
+    noel_outfit_type__: byte
+    noel_pee_lock: byte
+    # todo: recipe
+    recipe_raw_data:
+      type: segment_shifted
+      value:
+        type: object
+        types:
+          recipe_sign_expected_1: byte
+          recipe_o_dish_count: uint
+    # NelItem
+    item_segment:
+      type: segment_shifted
+      value:
+        type: object
+        types:
+          item_sign_expected_6: byte
+          # [Inventory, Precious, Enhancer, House]
+          item_types:
+            type: array
+            len: 4
+            value:
+              type: object
+              types:
+                item_count: int
+                item_hide_bottle_max: int
+                item_row_max: int
+                item_select_row_key: pascal_string
+                item_sort_type: byte
+                item_items:
+                  type: dynamic_array
+                  len: item_count
+                  value:
+                    type: object
+                    types:
+                      key: string
+                      grades:
+                        type: array
+                        len: 5
+                        value: ushort
+                      newer: uint
+                      # bool?
+                      is_linked_food: byte
+          item_dishes:
+            type: array
+            lensize: 2
+            value:
+              type: object
+              types:
+                recipe_id: uint
+                lvl01: float
+                bonused: bool
+                cost: float
+          item_reel:
+            type: array
+            value: byte
+            lensize: 2
+          item_obtainable_reel:
+            type: array
+            value: byte
+            lensize: 2
+          item_drop:
+            type: array
+            lensize: 2
+            value:
+              type: object
+              types:
+                key: string
+                x: float
+                y: float
+                flip: bool
+                count: byte
+                grade: byte
+          item_use_sign_expected_0: byte
+          # todo: use item branch
+    map_raw_data:
+      type: segment_shifted
+      value:
+        type: object
+        types:
+          # todo: map raw data
+          useless: byte
+    coin_data:
+      type: array
+      lensize: 4
+      value:
+        type: object
+        types:
+          key: string
+          get:
+            type: array
+            value: uint
+            lensize: 4
+    coin_count: uint
+    # NightCointroller
+    night_sign_expected_6: byte
+    night_fade_deplevel: float
+    night_pre_dlevel: ushort
+    night_dlevel: ushort
+    night_o_summoner_data:
+      type: array
+      lensize: 2
+      value:
+        type: object
+        types:
+          key: pascal_string
+          1-defeated_in_session-2-summoner_is_night-sign: byte
+          sudden_level: byte
+          defeat_count: int
+          last_battle_index: int
+          night_calced: byte
+    night_last_battle_lp_key: pascal_string
+    night_?_expected_null: pascal_string
+    night_reel_obtained: byte
+    night_weather:
+      type: array
+      lensize: 2
+      value:
+        type: object
+        types:
+          weather: uint
+          start_dlevel: short
+          desc_sp_key: pascal_string
+    night_dlevel_add: byte
+    night_first_battle_dlevel: byte
+    # StoreManager
+    store_sign_expected_1: byte
+    store_storage:
+      type: array
+      lensize: 1
+      value:
+        type: object
+        types:
+          key: string
+          store_manager_sign_expected_2: byte
+          need_summon_flush: byte
+          entries:
+            type: array
+            lensize: 2
+            value:
+              type: object
+              types:
+                key: pascal_string
+                count: ushort
+                grade: byte
+                line_key: pascal_string
+    # Nightingale
+    ntg_posx: float
+    ntg_posy: float
+    ntg_ag_r: float
+    ntg_appear_ratio: float
+    ntg_walk_around_flag_: bool
+    ntg_decided_key: pascal_string
+    ntg_a_not_exist_map:
+      type: array
+      value: pascal_string
+      lensize: 2
+    # EvTextLog
+    ev_sign_expected_0: byte
+    ev_max_i: ushort
+    ev_use_ptr: ushort
+    ev_log_items:
+      type: dynamic_array
+      len: ev_max_i
+      value:
+        type: object
+        types:
+          key: pascal_string
+          person: pascal_string
+    # NelItem
+    nelitems:
+      type: array
+      lensize: 2
+      value:
+        type: object
+        types:
+          key: ushort
+          value: byte

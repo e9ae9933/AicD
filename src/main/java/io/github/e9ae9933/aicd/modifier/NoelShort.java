@@ -1,6 +1,11 @@
 package io.github.e9ae9933.aicd.modifier;
 
-public class NoelShort extends NoelElement implements NoelLongable
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+
+public class NoelShort extends NoelLongable
 {
 	short data;
 	public NoelShort(NoelByteBuffer b)
@@ -26,5 +31,48 @@ public class NoelShort extends NoelElement implements NoelLongable
 		if(l<Short.MIN_VALUE||l>Short.MAX_VALUE)
 			throw new IllegalArgumentException(l+" is not a short");
 		data= (short) l;
+	}
+
+	@Override
+	public Component createGUI()
+	{
+		JTextField field=new JTextField(Short.toString(data));
+		field.setSize(maxLength(6),36);
+		field.setFont(middleFont);
+		field.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void insertUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e)
+			{
+				update();
+			}
+			void update()
+			{
+				String s=field.getText();
+				try
+				{
+					int result=Integer.parseInt(s);
+					if(result<-32768||result>32767)
+						throw new NumberFormatException();
+					data= ((short) result);
+					brilliant(field);
+				}
+				catch (Exception e)
+				{
+					blunder(field);
+				}
+			}
+		});
+		return field;
 	}
 }

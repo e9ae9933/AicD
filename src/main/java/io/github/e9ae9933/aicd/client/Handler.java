@@ -61,7 +61,7 @@ public class Handler
 				Thread.sleep(1);
 			}
 			// todo: shit-like casting
-			if(typeToken==null)
+			if(typeToken==null||rt instanceof ClientboundRejectPacket)
 				return rt;
 			else
 			{

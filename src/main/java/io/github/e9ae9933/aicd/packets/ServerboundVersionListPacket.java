@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.packets;
 
+import com.google.gson.reflect.TypeToken;
+import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.VersionInfo;
 import io.github.e9ae9933.aicd.server.Main;
 
@@ -8,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +24,7 @@ public class ServerboundVersionListPacket extends Packet
 	{
 		try
 		{
-			url = new URL("https://mua.sibaken.org/CN01/Public/AliceInCradle_Latest");
+			url = new URL("https://mua.shiro.dev/CN01/Public/AliceInCradle_Latest");
 		} catch (MalformedURLException e)
 		{
 			e.printStackTrace();
@@ -54,7 +57,7 @@ public class ServerboundVersionListPacket extends Packet
 					int end=s.indexOf('\"',i);
 					String u=s.substring(i,end);
 					String name=u.substring(u.lastIndexOf('/')+1/*,u.lastIndexOf('.')*/);
-					next.add(new VersionInfo(name,new URL("https://mua.sibaken.org"+u)));
+					next.add(new VersionInfo(name,new URL("https://mua.shiro.dev"+u),"镜像站 ALI-BJ"));
 				}
 //				System.out.println("updated "+ Main.gson.toJson(next));
 				versionInfo=next;
@@ -63,6 +66,18 @@ public class ServerboundVersionListPacket extends Packet
 				e.printStackTrace();
 				if(versionInfo==null)
 					versionInfo=new ArrayList<>();
+			}
+			try
+			{
+				InputStream is = ServerboundVersionListPacket.class.getClassLoader().getResourceAsStream("extra_versions.json");
+				byte[] b = new byte[is.available()];
+				is.read(b);
+				is.close();
+				versionInfo.addAll(Policy.gson.fromJson(new String(b, Charset.forName("UTF-8")),new TypeToken<List<VersionInfo>>(){}));
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package io.github.e9ae9933.aicd;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -20,6 +21,8 @@ public class Utils
 		{
 			if (gamePath == null || recalculate)
 			{
+				if(false)
+				throw new RuntimeException();
 				String os = System.getProperty("os.name");
 				String log;
 				if (os.contains("Windows"))
@@ -43,6 +46,8 @@ public class Utils
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
+			gamePath= new File("");
+			JOptionPane.showMessageDialog(null,"检测到的路径无效，请前往“设置”界面手动设置路径。","路径无效",JOptionPane.WARNING_MESSAGE);
 		}
 		return gamePath;
 	}

@@ -6,18 +6,16 @@ public class NoelSegmentShifted extends NoelElement
 {
 	NoelElement data;
 	byte shift;
-	public NoelSegmentShifted(NoelByteBuffer b, Map<String,Object> settings, Map<String,Type> knownTypes)
+	public NoelSegmentShifted(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
 	{
 		if(settings==null)
 			throw new IllegalArgumentException("Segment must have settings");
 		int len=b.getInt();
 		shift=b.getByte();
 		Object o=settings.get("value");
-		Type type=knownTypes.get(Type.readTypeNameFromSettings(o));
 		NoelByteBuffer buf=new NoelByteBuffer(b.getNBytes(len));
 		buf.addShift(shift);
-		data=type.read(buf,Type.toSettings(o),knownTypes);
-
+		data=NoelElement.newInstance(o,buf,primitives,variables);
 		if(buf.size()!=0)
 			System.err.println("Warning: left "+buf.size()+" bytes");
 	}

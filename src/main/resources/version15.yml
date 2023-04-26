@@ -424,7 +424,7 @@ list:
       types:
         fill_id: int
         thread: int
-        type: byte
+        type: byte  
         power: float
         col: uint
         col2: uint
