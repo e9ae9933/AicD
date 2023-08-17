@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -11,7 +13,7 @@ public class NoelString extends NoelElement
 {
 	int len;
 	String data;
-	public NoelString(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
+	public NoelString(NoelByteBuffer b, Map<String,Object> settings, Map<String,Class<? extends NoelElement>> primitives, Map<String,NoelElement> variables)
 	{
 		if(settings!=null)
 			len=Integer.parseInt(settings.getOrDefault("len",-1).toString());
@@ -39,7 +41,7 @@ public class NoelString extends NoelElement
 	}
 
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JTextField field=new JTextField(data);
 		field.setFont(middleFont);

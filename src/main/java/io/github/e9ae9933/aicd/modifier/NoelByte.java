@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -19,7 +21,7 @@ public class NoelByte extends NoelLongable
 	}
 
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JTextField field=new JTextField(Byte.toString(data));
 		field.setSize(maxLength(4),36);

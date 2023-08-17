@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -26,6 +28,8 @@ public abstract class NoelElement
 	}
 	public static NoelElement newInstance(Class<? extends NoelElement> clazz,NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> knownTypes,Map<String,NoelElement> variables)
 	{
+		if(!NoelElement.class.isAssignableFrom(clazz))
+			throw new RuntimeException("unrecognized class "+clazz);
 		Constructor<? extends NoelElement> cons;
 		try
 		{
@@ -53,7 +57,7 @@ public abstract class NoelElement
 		}
 	}
 //	public abstract Component createGUI();
-	public Component createGUI(){return unsupportedGUI();}
+	public Component createGUI(Component parent){return unsupportedGUI();}
 	protected Component unsupportedGUI()
 	{
 		JLabel label=new JLabel(getClass().getSimpleName()+" 的编辑未被实装");

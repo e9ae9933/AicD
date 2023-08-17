@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
@@ -7,7 +9,7 @@ import java.util.Map;
 public class NoelSegment extends NoelElement
 {
 	NoelElement data;
-	public NoelSegment(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
+	public NoelSegment(NoelByteBuffer b, Map<String,Object> settings, Map<String,Class<? extends NoelElement>> primitives, Map<String,NoelElement> variables)
 	{
 		if(settings==null)
 			throw new IllegalArgumentException("Segment must have settings");
@@ -27,11 +29,11 @@ public class NoelSegment extends NoelElement
 		b.putBytes(buf.getNBytes(buf.size()));
 	}
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JPanel panel=new JPanel();
 		panel.setLayout(null);
-		Component c=data.createGUI();
+		Component c=data.createGUI(parent);
 		panel.setSize(c.getSize());
 		c.setLocation(0,0);
 		panel.add(c);

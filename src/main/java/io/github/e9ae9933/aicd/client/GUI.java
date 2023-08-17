@@ -43,7 +43,7 @@ public class GUI
 		pane.addTab("模组",ModGUI.create(this,handler));
 		pane.addTab("设置",SettingsGUI.create());
 		pane.addTab("说明",AboutGUI.create(handler));
-		pane.addTab("存档",ModifierGUI.create());
+		pane.addTab("存档",ModifierGUI.create(main,frame));
 		pane.setSelectedIndex(3);
 		pane.setBounds(0,100,1280,720);
 

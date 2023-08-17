@@ -1,13 +1,12 @@
 package io.github.e9ae9933.aicd.modifier;
 
-import io.github.e9ae9933.aicd.Policy;
+import io.github.e9ae9933.aicd.NoelByteBuffer;
 import io.github.e9ae9933.aicd.Utils;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,6 +30,21 @@ public class Main
 		NoelObject list= (NoelObject) NoelElement.newInstance(o.get("list"), b,primitives,new LinkedHashMap<>());
 		//System.out.println(Policy.gson.toJson(list));
 		System.out.println("left "+b.size()+" byte(s)");
+		return list;
+	}
+	public static NoelElement load(String yml,byte[] file)
+	{
+		Load load=new Load(LoadSettings.builder().build());
+		Map<String,Object> o= (Map<String, Object>) load.loadFromString(yml);
+		Map<String,String> typesRaw= (Map<String, String>) o.get("types");
+		Map<String,Class<? extends NoelElement>> primitives=new LinkedHashMap<>();
+		typesRaw.forEach((key,value)-> Utils.ignoreExceptions(()->primitives.put(key, (Class<? extends NoelElement>) Class.forName(value))));
+		NoelByteBuffer b = new NoelByteBuffer(file);
+		NoelObject list= (NoelObject) NoelElement.newInstance(o.get("list"), b,primitives,new LinkedHashMap<>());
+		//System.out.println(Policy.gson.toJson(list));
+		System.out.println("left "+b.size()+" byte(s)");
+		if(b.size()!=0)
+			throw new RuntimeException("在存档的末尾仍有未读取的数据。存档格式表是最新的吗?");
 		return list;
 	}
 	static byte[] readAllBytes(String filename)

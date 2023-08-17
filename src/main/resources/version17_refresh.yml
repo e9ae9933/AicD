@@ -1,9 +1,8 @@
 #
-# Data format for AIC data version 15
+# Data format for AIC data version 17 : 23a
 # Big Endian
 # still in progress
 # todo: refresh
-# Team NyaPaint
 # Contributor: e9ae9933
 # Special thanks: NoelCornehl
 #
@@ -217,6 +216,9 @@ list:
     # yes there's 2 underslashes
     noel_outfit_type__: byte
     noel_pee_lock: byte
+    noel_gsaver_sign_expected_0: byte
+    noel_gsaver_0: ushort
+    noel_gsaver_1: ushort
     # todo: recipe
     recipe_raw_data:
       type: segment_shifted
@@ -224,7 +226,7 @@ list:
         type: object
         types:
           recipe_sign_expected_1: byte
-          recipe_o_dish_count: uint
+#          recipe_o_dish_count: uint
     # NelItem
     item_segment:
       type: segment_shifted
@@ -342,6 +344,10 @@ list:
           desc_sp_key: pascal_string
     night_dlevel_add: byte
     night_first_battle_dlevel: byte
+    night_xors_0: uint
+    night_xors_1: uint
+    night_xors_2: uint
+    night_xors_3: uint
     # StoreManager
     store_sign_expected_1: byte
     store_storage:
@@ -397,3 +403,56 @@ list:
         types:
           key: ushort
           value: byte
+    # QuestTracker
+    quest_sign_expected_0: byte
+    quest_prog:
+      type: array
+      lensize: 4
+      value:
+        type: object
+        types:
+          q_uid: ushort
+          phase-1-128-new_icon: byte
+          update_count: uint
+          collected_count:
+            type: array
+            lensize: 1
+            value:
+              type: array
+              lensize: 1
+              value: ushort
+    quest_finished:
+      type: array
+      lensize: 4
+      value:
+        type: object
+        types:
+          q_uid: ushort
+          phase-1-128-new_icon: byte
+          update_count: uint
+          collected_count:
+            type: array
+            lensize: 1
+            value:
+              type: array
+              lensize: 1
+              value: ushort
+    quest_sort_type: byte
+    quest_selected:
+      type: array
+      lensize: 1
+      value:
+        type: object
+        types:
+          key: byte
+          uid: ushort
+    difficulty: byte
+    trm_sign_expected_0: byte
+    trm_values:
+      type: array
+      lensize: 1
+      value:
+        type: object
+        types:
+          uid: ushort
+          watched: byte

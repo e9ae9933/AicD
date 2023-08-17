@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,7 +28,7 @@ public class NoelUnsignedByte extends NoelByte
 		data= (byte) l;
 	}
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JTextField field=new JTextField(Byte.toUnsignedInt(data)+"");
 		field.setSize(maxLength(3),36);

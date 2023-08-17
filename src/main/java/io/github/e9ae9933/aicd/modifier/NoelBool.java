@@ -1,8 +1,8 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class NoelBool extends NoelByte
@@ -12,7 +12,7 @@ public class NoelBool extends NoelByte
 		super(b);
 	}
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JButton button=new JButton();
 		button.setSize(72,36);

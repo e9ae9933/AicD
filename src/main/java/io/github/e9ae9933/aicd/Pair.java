@@ -10,4 +10,17 @@ public class Pair <A,B>
 		this.first = first;
 		this.second = second;
 	}
+	@Override
+	public boolean equals(Object o)
+	{
+		if(!(o instanceof Pair))
+			return false;
+		return first.equals(((Pair<?, ?>) o).first)&&second.equals(((Pair<?, ?>) o).second);
+	}
+	@Override
+	public int hashCode()
+	{
+		return first.hashCode()^second.hashCode();
+	}
+
 }

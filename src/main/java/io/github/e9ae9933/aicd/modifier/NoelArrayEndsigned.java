@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.Map;
 public class NoelArrayEndsigned extends NoelElement
 {
 	List<NoelElement> data;
-	public NoelArrayEndsigned(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
+	public NoelArrayEndsigned(NoelByteBuffer b, Map<String,Object> settings, Map<String,Class<? extends NoelElement>> primitives, Map<String,NoelElement> variables)
 	{
 		Object o=settings.get("value");
 		data =new ArrayList<>();
@@ -32,7 +34,7 @@ public class NoelArrayEndsigned extends NoelElement
 	}
 
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		return unsupportedGUI();
 	}

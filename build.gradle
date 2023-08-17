@@ -26,3 +26,15 @@ test {
 application{
     mainClass='io.github.e9ae9933.aicd.client.Main'
 }
+
+jar{
+    
+}
+
+shadowJar{
+
+}
+
+tasks.withType(JavaCompile){
+    options.encoding="UTF-8"
+}

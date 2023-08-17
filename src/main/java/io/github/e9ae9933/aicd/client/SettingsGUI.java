@@ -26,7 +26,7 @@ public class SettingsGUI
 		JTextField path=new JTextField();
 		path.setBounds(100,100,950,36);
 		path.setFont(GUI.middleFont);
-		try{path.setText(Utils.getGamePath(true).getAbsolutePath());}catch(Exception e){}
+		try{path.setText(Utils.getGamePath(false).getAbsolutePath());}catch(Exception e){}
 		panel.add(path);
 		path.getDocument().addDocumentListener(new DocumentListener()
 		{

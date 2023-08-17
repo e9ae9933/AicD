@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import java.awt.*;
 import java.util.Map;
 
@@ -7,7 +9,7 @@ public class NoelBranch extends NoelElement
 {
 	byte branch;
 	NoelElement data;
-	public NoelBranch(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
+	public NoelBranch(NoelByteBuffer b, Map<String,Object> settings, Map<String,Class<? extends NoelElement>> primitives, Map<String,NoelElement> variables)
 	{
 		branch=b.getByte();
 		b.putFront(branch);
@@ -24,7 +26,7 @@ public class NoelBranch extends NoelElement
 	}
 
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		return unsupportedGUI();
 	}

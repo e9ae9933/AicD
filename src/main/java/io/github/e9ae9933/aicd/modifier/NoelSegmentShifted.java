@@ -1,5 +1,7 @@
 package io.github.e9ae9933.aicd.modifier;
 
+import io.github.e9ae9933.aicd.NoelByteBuffer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
@@ -9,7 +11,7 @@ public class NoelSegmentShifted extends NoelElement
 	NoelElement data;
 	byte shift;
 	byte[] left;
-	public NoelSegmentShifted(NoelByteBuffer b, Map<String,Object> settings,Map<String,Class<? extends NoelElement>> primitives,Map<String,NoelElement> variables)
+	public NoelSegmentShifted(NoelByteBuffer b, Map<String,Object> settings, Map<String,Class<? extends NoelElement>> primitives, Map<String,NoelElement> variables)
 	{
 		if(settings==null)
 			throw new IllegalArgumentException("Segment must have settings");
@@ -29,12 +31,15 @@ public class NoelSegmentShifted extends NoelElement
 		NoelByteBuffer buf=new NoelByteBuffer();
 		data.writeTo(buf);
 		buf.putBytes(left);
-		buf.addShift(shift);
+		buf.addShift((byte) -shift);
+
 		b.putInt(buf.size());
+		b.putByte(shift);
+
 		b.putBytes(buf.getNBytes(buf.size()));
 	}
 	@Override
-	public Component createGUI()
+	public Component createGUI(Component parent)
 	{
 		JPanel panel=new JPanel();
 		panel.setLayout(null);
@@ -43,7 +48,7 @@ public class NoelSegmentShifted extends NoelElement
 		label.setBounds(1,1,200,36);
 		JLabel label1=new JLabel(left.length!=0? String.format("尾部有 %d 字节未知数据 (存档格式表版本对得上吗?)", left.length):"尾部没有未知数据");
 		label1.setFont(left.length!=0?middleFont.deriveFont(Font.BOLD):middleFont);
-		Component c=data.createGUI();
+		Component c=data.createGUI(parent);
 		panel.setSize(Math.max(c.getWidth(),500)+2,c.getHeight()+36+36+2);
 		c.setLocation(1,36+1);
 		label1.setBounds(1,c.getHeight()+36+1,500,36);

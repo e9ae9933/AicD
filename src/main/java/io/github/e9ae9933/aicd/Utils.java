@@ -1,9 +1,7 @@
 package io.github.e9ae9933.aicd;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -15,14 +13,60 @@ public class Utils
 	{
 		Utils.gamePath=gamePath;
 	}
+	public static File getSavePath()
+	{
+		File file=new File(System.getProperty("user.home")+"\\Appdata\\LocalLow\\NanameHacha\\AliceInCradle");
+		if(file.exists()&&file.isDirectory())
+			return file;
+		return null;
+	}
+	public static byte[] readAllBytes(InputStream is)
+	{
+		try
+		{
+			byte[] b = new byte[is.available()];
+			is.read(b);
+			return b;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	public static InputStream readFromResources(String name,boolean create)
+	{
+		try
+		{
+			File file = new File(name);
+			if (!file.exists())
+			{
+				InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(name);
+				if(is==null)
+					throw new NullPointerException("File not found: "+name);
+				if (create)
+				{
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(readAllBytes(is));
+					is.close();
+					fos.close();
+				}
+				else
+					return is;
+			}
+			return new FileInputStream(file);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 	public static File getGamePath(boolean recalculate)
 	{
 		try
 		{
-			if (gamePath == null || recalculate)
+			if (recalculate)
 			{
-				if(false)
-				throw new RuntimeException();
 				String os = System.getProperty("os.name");
 				String log;
 				if (os.contains("Windows"))
@@ -40,14 +84,44 @@ public class Utils
 				String managed=s.substring(1+s.indexOf('\''),s.lastIndexOf('\''));
 				File m=new File(managed);
 				gamePath=m.getParentFile().getParentFile();
+				if(!gamePath.exists())
+					throw new RuntimeException(gamePath+" not exists");
 				System.out.println("Updated path to "+gamePath);
 			}
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			gamePath= new File("");
-			JOptionPane.showMessageDialog(null,"检测到的路径无效，请前往“设置”界面手动设置路径。","路径无效",JOptionPane.WARNING_MESSAGE);
+			gamePath= null;
+			JFileChooser chooser=new JFileChooser();
+			chooser.setSize(800,600);
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			chooser.setMultiSelectionEnabled(false);
+//			JOptionPane.showMessageDialog(null,"检测到的路径无效，请前往“设置”界面手动设置路径。","路径无效",JOptionPane.WARNING_MESSAGE);
+			while(gamePath==null)
+			{
+				int id = JOptionPane.showConfirmDialog(null, "未检测到 AIC 路径。您想要现在指定游戏路径吗？\n如果您不知道这是什么，请点击“是”来指定路径。", "路径无效", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (id == JOptionPane.CLOSED_OPTION)
+					System.exit(-1);
+				if (id == JOptionPane.NO_OPTION)
+					return gamePath;
+				int chs = chooser.showOpenDialog(null);
+				if (chs != JFileChooser.APPROVE_OPTION)
+				{
+					continue;
+				}
+				gamePath=chooser.getSelectedFile();
+				File aic=new File(gamePath.getAbsolutePath()+"/AliceInCradle.exe");
+				if(!aic.exists())
+				{
+					int ans=JOptionPane.showConfirmDialog(null,"该路径下未发现 AliceInCradle.exe。\n您确定您选择的是游戏可执行文件的父目录吗？\n如果你不确定，请点击“否”来重新选择。","路径怀疑",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+					if(ans!=JOptionPane.OK_OPTION)
+					{
+						gamePath=null;
+						continue;
+					}
+				}
+			}
 		}
 		return gamePath;
 	}

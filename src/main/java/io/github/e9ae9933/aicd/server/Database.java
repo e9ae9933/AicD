@@ -4,11 +4,16 @@ import com.google.gson.reflect.TypeToken;
 import io.github.e9ae9933.aicd.ModInfo;
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
+import io.github.e9ae9933.aicd.VersionInfo;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 public class Database
 {
@@ -17,15 +22,91 @@ public class Database
 	private Map<UUID,User> tokenToUser;
 	private Map<String,User> usernameToUser;
 	private Set<ModInfo> mods;
+	private List<VersionInfo> versions;
 	Database() throws Exception
 	{
+		versions=readFrom("versions.json",new TypeToken<List<VersionInfo>>(){});
+		VersionInfo info;
+		versions.add(info=new VersionInfo("等待自动更新……",null,"镜像站"));
+		AtomicBoolean updatedFirst=new AtomicBoolean(false);
+		Thread timer= new Thread(() ->
+		{
+			while(true)
+			{
+				try{
+					URL url=new URL("https://aic.zip");
+					HttpsURLConnection conn= ((HttpsURLConnection) url.openConnection());
+					conn.addRequestProperty("User-Agent","AliceInCradle Toolbox on Windows");
+					conn.addRequestProperty("Sec-Ch-Ua-Platform","\"Windows\"");
+					conn.connect();
+					System.out.println(conn.getResponseCode());
+					InputStream is=conn.getInputStream();
+					ByteArrayOutputStream b=new ByteArrayOutputStream();
+					int ch;
+					ArrayList<Byte> bb=new ArrayList<>();
+					while((ch=is.read())!=-1)
+						bb.add(((byte)ch));
+					conn.disconnect();
+					byte[] ba=new byte[bb.size()];
+					for(int i=0;i<ba.length;i++)
+						ba[i]=bb.get(i);
+					String s=new String(ba,StandardCharsets.UTF_8);
+					System.out.println(s);
+					int pos=s.indexOf("\"blocklink");
+					int r=s.lastIndexOf("\"",pos-1);
+					int l=s.lastIndexOf("\"",r-1);
+					String ans=s.substring(l+1,r);
+					System.out.println(ans);
+					String reboot=ans;
+
+					Function<URL,URL> fun=(aurl)->{
+//						URL aurl=new URL(ans);
+						try
+						{
+							System.out.println("Connecting to "+aurl);
+							HttpsURLConnection c = (HttpsURLConnection) aurl.openConnection();
+							c.setInstanceFollowRedirects(false);
+							c.addRequestProperty("User-Agent", "AliceInCradle Toolbox on Windows");
+							c.connect();
+							return new URL(c.getHeaderField("Location"));
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+							return null;
+						}
+					};
+					String fileName=fun.apply(fun.apply(new URL(reboot))).toString();
+					String location=fileName;
+					fileName=URLDecoder.decode(fileName);
+//					c.disconnect();
+					System.out.println(new URL(fileName).toExternalForm());
+					fileName=fileName.substring(fileName.lastIndexOf('/')+1,fileName.lastIndexOf('.')-1+1);
+					System.out.println(fileName);
+					info.name=fileName+".zip";
+					info.url=new URL(location);
+				}catch (Exception e)
+				{
+					e.printStackTrace();
+					if(!updatedFirst.get())
+					{
+						info.name = "自动更新最新版本失败";
+					}
+				}
+				updatedFirst.getAndSet(true);
+				Utils.ignoreExceptions(()->Thread.sleep(1000*600));
+			}
+		});
+		timer.start();
+		System.out.println("等待自动更新");
+		while((!isIntegrated()||true)&&!updatedFirst.get());
 		if(isIntegrated())
 			return;
-		users=readFrom("users",new HashSet<>(),new TypeToken<HashSet<User>>(){});
+		users=readFrom("users.json",new TypeToken<HashSet<User>>(){});
 		tokenToUser=new HashMap<>();
 		usernameToUser=new HashMap<>();
 		users.forEach(user->updateUserIntoMaps(user,false));
-		mods=readFrom("mods",new HashSet<>(),new TypeToken<HashSet<ModInfo>>(){});
+		mods=readFrom("mods.json",new TypeToken<HashSet<ModInfo>>(){});
 //		mods.add(new ModInfo("test",null));
 		save();
 	}
@@ -40,16 +121,16 @@ public class Database
 
 	void save()
 	{
-		writeTo("users",users);
-		writeTo("mods",mods);
+		writeTo("users.json",users);
+		writeTo("mods.json",mods);
 	}
 	void writeTo(String name,Object o)
 	{
 		try
 		{
-			FileWriter fw = new FileWriter(new File(name + ".json"));
-			fw.write(Main.gson.toJson(o));
-			fw.close();
+			FileOutputStream fos=new FileOutputStream(name);
+			fos.write(Main.gson.toJson(o).getBytes(StandardCharsets.UTF_8));
+			fos.close();
 		}
 		catch (Exception e)
 		{
@@ -57,17 +138,19 @@ public class Database
 			throw new RuntimeException(e);
 		}
 	}
-	<T> T readFrom(String name,T def,TypeToken<T> typeToken)
+	<T> T readFrom(String name,TypeToken<T> typeToken)
 	{
-		File file=new File(name+".json");
-		if(!file.exists())
-			return def;
-		FileReader fr= Utils.ignoreExceptions(()->new FileReader(file));
-		T o=Main.gson.fromJson(fr,typeToken);
-		Utils.ignoreExceptions(()->fr.close());
-		if(o!=null)
-		System.out.println("T "+o.getClass());
-		return o==null?def:o;
+		try
+		{
+			InputStream is = Utils.readFromResources(name, !isIntegrated());
+			byte[] b = Utils.readAllBytes(is);
+			is.close();
+			return Main.gson.fromJson(new String(b, StandardCharsets.UTF_8),typeToken);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 	void updateUserIntoMaps(User user,boolean updateSet)
 	{
@@ -119,6 +202,10 @@ public class Database
 	{
 		checkIntegrated();
 		return new ArrayList<>(mods);
+	}
+	public List<VersionInfo> getVersions()
+	{
+		return versions;
 	}
 	boolean isIntegrated()
 	{

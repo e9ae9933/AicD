@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main
@@ -50,6 +51,9 @@ public class Main
 	}
 	Main(String[] args) throws Exception
 	{
+		System.out.println("Encoding "+System.getenv("file.encoding"));
+		System.out.println("Or "+ Charset.defaultCharset());
+		System.out.println("Chinese support: "+"支持");
 		OptionParser optionParser=new OptionParser();
 		OptionSpec<Void> integrated=optionParser.accepts("integrated");
 		ArgumentAcceptingOptionSpec<String> server=optionParser.accepts("server").availableUnless(integrated).withRequiredArg();
@@ -91,7 +95,7 @@ public class Main
 			}
 		}
 		label.setText("正在获取游戏路径");
-		Utils.getGamePath(false);
+		Utils.getGamePath(true);
 
 		while(handler==null)
 		{
@@ -133,7 +137,7 @@ public class Main
 		}
 		label.setText("正在获取更新");
 		ServerboundRequestPacket.LatestVersion latest=handler.getLatestVersion();
-		if(latest.versionCode!= Constants.versionCode)
+		if(latest.versionCode> Constants.versionCode)
 		{
 //			label.setVisible(false);
 //			initFrame.remove(label);
@@ -183,9 +187,9 @@ public class Main
 		label.setText("正在初始化窗口");
 		gui=new GUI(this,handler);
 		if(ranIntegratedServer)
-			gui.frame.setTitle("AicD 离线模式 "+Constants.version);
+			gui.frame.setTitle("AliceInCradle Toolbox 离线模式 "+Constants.version);
 		else
-			gui.frame.setTitle("AicD "+Constants.version);
+			gui.frame.setTitle("AliceInCradle Toolbox "+Constants.version);
 		initFrame.setVisible(false);
 		initFrame.dispose();
 	}

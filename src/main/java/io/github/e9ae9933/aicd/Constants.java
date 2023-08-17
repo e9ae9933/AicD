@@ -2,8 +2,8 @@ package io.github.e9ae9933.aicd;
 
 public class Constants
 {
-	public static String version="1.1";
-	public static int versionCode=2;
+	public static String version="1.2";
+	public static int versionCode=3;
 	public static String versionUrl="https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD-all.jar";
 //	public static String[] versions={"0.0","1.0","1.1"};
 }

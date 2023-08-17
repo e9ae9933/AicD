@@ -1,18 +1,45 @@
-package io.github.e9ae9933.aicd.modifier;
+package io.github.e9ae9933.aicd;
 
 import java.io.InputStream;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class NoelByteBuffer
 {
+	public static List<NoelByteBuffer> handlers;
+	static {
+		handlers=new ArrayList<>();
+	}
 	Deque<Byte> data;
 	byte shift;
 	public NoelByteBuffer()
 	{
 		data=new LinkedList<>();
 		shift=0;
+		if(handlers!=null)
+			handlers.add(this);
+	}
+	public static void endAll()
+	{
+		handlers.forEach(buf->buf.end());
+		handlers.clear();
+	}
+	public void end()
+	{
+		if(size()>0)
+		{
+			System.err.println("Warning: left "+size()+" byte(s)");
+			List<Byte> l=data.stream().limit(32).collect(Collectors.toList());
+			System.err.println("printing first "+l.size()+" bytes");
+			for(Byte b:l)
+				System.err.printf("%02X ",b);
+			System.err.println();
+			for(Byte b:l)
+				System.err.printf("%s ",Character.isISOControl(b)?"..":" "+(char)b.byteValue());
+			System.err.println();
+			data=null;
+		}
 	}
 	public NoelByteBuffer(byte[] b)
 	{
@@ -40,6 +67,11 @@ public class NoelByteBuffer
 	}
 	public byte getByte()
 	{
+		if(data.isEmpty()&&false)
+		{
+			data.add((byte) 0);
+			System.err.println("补0");
+		}
 		return (byte) (data.poll()-shift);
 	}
 	public void putByte(byte b)
@@ -108,9 +140,42 @@ public class NoelByteBuffer
 		getBytes(b);
 		return b;
 	}
+	public byte[] getAllBytes()
+	{
+		return getNBytes(size());
+	}
 	public void putBytes(byte[] b)
 	{
 		for(int i=0;i<b.length;i++)
 			putByte(b[i]);
+	}
+	public boolean getBoolean()
+	{
+		return getByte()!=0;
+	}
+	public String getUTFString()
+	{
+		return new String(getNBytes(Short.toUnsignedInt(getShort())), StandardCharsets.UTF_8);
+	}
+	public short getUnsignedByte()
+	{
+		return (short)(getByte()&0xFF);
+	}
+	public int getUnsignedShort()
+	{
+		return Short.toUnsignedInt(getShort());
+	}
+	public long getUnsignedInt()
+	{
+		return getInt()&0xFFFFFFFFL;
+	}
+	public NoelByteBuffer getSegment()
+	{
+		int len=getInt();
+		return new NoelByteBuffer(getNBytes(len));
+	}
+	public String getString(int len)
+	{
+		return new String(getNBytes(len));
 	}
 }

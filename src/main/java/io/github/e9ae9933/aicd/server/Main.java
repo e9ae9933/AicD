@@ -78,7 +78,7 @@ public class Main
 			System.out.println("Integrated server");
 		Database.instance=new Database();
 
-		ServerboundVersionListPacket.update();
+//		ServerboundVersionListPacket.update();
 
 		ServerSocket socket=new ServerSocket(port);
 		port=socket.getLocalPort();
