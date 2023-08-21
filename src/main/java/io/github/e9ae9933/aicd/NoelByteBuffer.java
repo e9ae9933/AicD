@@ -9,7 +9,7 @@ public class NoelByteBuffer
 {
 	public static List<NoelByteBuffer> handlers;
 	static {
-		handlers=new ArrayList<>();
+		handlers=Collections.synchronizedList(new ArrayList<>());
 	}
 	Deque<Byte> data;
 	byte shift;
@@ -20,7 +20,7 @@ public class NoelByteBuffer
 		if(handlers!=null)
 			handlers.add(this);
 	}
-	public static void endAll()
+	public synchronized static void endAll()
 	{
 		handlers.forEach(buf->buf.end());
 		handlers.clear();
@@ -173,6 +173,24 @@ public class NoelByteBuffer
 	{
 		int len=getInt();
 		return new NoelByteBuffer(getNBytes(len));
+	}
+	public void putUTFString(String s)
+	{
+		putShort((short) s.length());
+		putBytes(s.getBytes(StandardCharsets.UTF_8));
+	}
+	public void putBoolean(boolean b)
+	{
+		putByte(b?(byte)1:(byte)0);
+	}
+	public void putSegment(NoelByteBuffer b)
+	{
+		putSegment(b.getAllBytes());
+	}
+	public void putSegment(byte[] data)
+	{
+		putInt(data.length);
+		putBytes(data);
 	}
 	public String getString(int len)
 	{

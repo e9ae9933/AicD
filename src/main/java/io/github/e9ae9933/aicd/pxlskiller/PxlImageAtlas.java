@@ -1,14 +1,13 @@
 package io.github.e9ae9933.aicd.pxlskiller;
 
 import io.github.e9ae9933.aicd.NoelByteBuffer;
+import io.github.e9ae9933.aicd.Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class PxlImageAtlas
@@ -18,9 +17,25 @@ public class PxlImageAtlas
 		int id;
 		double id2;
 		int x,y,width,height;
+
+		public Uv(){}
+		public Uv(int id, double id2, int x, int y, int width, int height)
+		{
+			this.id = id;
+			this.id2 = id2;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
 	}
 	Uv[] pos;
 	BufferedImage image;
+	PxlImageAtlas(Uv[] pos,BufferedImage image)
+	{
+		this.pos=pos;
+		this.image=image;
+	}
 	PxlImageAtlas(NoelByteBuffer b,Settings s,int id)
 	{
 		int type=b.getByte()-22;
@@ -28,6 +43,8 @@ public class PxlImageAtlas
 		{
 			int num = Byte.toUnsignedInt(b.getByte());
 			int margin = Byte.toUnsignedInt(b.getByte());
+			if(margin!=1)
+				throw new IllegalArgumentException("what?! not 1 margin?!");
 			//System.out.println("margin "+margin);
 			int num2 = b.getInt();
 			pos = new Uv[num2];
@@ -50,6 +67,7 @@ public class PxlImageAtlas
 				//todo: load texture
 				try{
 					File png=new File(s.externalResourcesDir, String.format(s.pxlsName + ".bytes.texture_%d.png", id));
+					//System.out.println("load from "+png);
 					FileInputStream fis=new FileInputStream(png);
 					image=ImageIO.read(fis);
 					fis.close();
@@ -93,6 +111,28 @@ public class PxlImageAtlas
 				}
 			}
 		}
+	}
+//	static NoelByteBuffer output()
+	NoelByteBuffer output(Settings s)
+	{
+		NoelByteBuffer b=new NoelByteBuffer();
+		b.putByte((byte)22);
+		b.putByte((byte)0);
+		b.putByte((byte)1);
+		b.putInt(pos.length);
+		Arrays.stream(pos).forEachOrdered(t->{
+			b.putInt(t.id);
+			b.putDouble(t.id2);
+			b.putInt(t.x);
+			b.putInt(t.y);
+			b.putInt(t.width);
+			b.putInt(t.height);
+		});
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		Utils.ignoreExceptions(()->{ImageIO.write(image,"png",bos);});
+		b.putSegment(bos.toByteArray());
+		Utils.ignoreExceptions(()->bos.close());
+		return b;
 	}
 	@Deprecated
 	static List<PxlImage> readFromBytes(NoelByteBuffer b,Settings s)

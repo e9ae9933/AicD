@@ -17,6 +17,16 @@ public class Pair <A,B>
 			return false;
 		return first.equals(((Pair<?, ?>) o).first)&&second.equals(((Pair<?, ?>) o).second);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Pair{" +
+				"first=" + first +
+				", second=" + second +
+				'}';
+	}
+
 	@Override
 	public int hashCode()
 	{

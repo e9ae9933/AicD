@@ -53,7 +53,7 @@ public class Policy
 		{
 			return new File(in.nextString());
 		}
-	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().create();
+	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().disableHtmlEscaping().create();
 	public static boolean isUsernameValid(String s)
 	{
 		if(s==null)

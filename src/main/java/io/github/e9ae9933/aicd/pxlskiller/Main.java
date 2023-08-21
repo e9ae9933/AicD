@@ -9,10 +9,34 @@ import joptsimple.OptionSpec;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+class Test
+{
+	public static void main(String[] args) throws Exception
+	{
+		Settings s=new Settings();
+		s.externalResourcesDir=new File("F:\\work\\origin\\Texture2D");
+		s.pxlsName="noel.pxls";
+		InputStream is=Utils.readFromResources("noel.pxls",false);
+		NoelByteBuffer buf=new NoelByteBuffer(Utils.readAllBytes(is));
+		is.close();
+		PxlCharacter chara=new PxlCharacter(buf,s);
+		//System.out.println(s.referenceMap);
+		chara.export(new File("tryexport"),s);
+
+		Settings set=new Settings();
+		PxlCharacter character=new PxlCharacter(new File("tryexport"),set);
+		FileOutputStream fos=new FileOutputStream("test.pxls");
+		fos.write(character.outputAsBytes());
+		fos.close();
+
+	}
+}
 public class Main
 {
 	public static void main(String[] args) throws Exception

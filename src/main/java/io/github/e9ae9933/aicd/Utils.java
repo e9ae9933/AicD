@@ -61,6 +61,20 @@ public class Utils
 			throw new RuntimeException(e);
 		}
 	}
+	public static byte[] readAllBytes(File file)
+	{
+		try
+		{
+			FileInputStream fis=new FileInputStream(file);
+			byte[] b=readAllBytes(fis);
+			fis.close();
+			return b;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 	public static File getGamePath(boolean recalculate)
 	{
 		try
