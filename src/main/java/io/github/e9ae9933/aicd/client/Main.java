@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
-import io.github.e9ae9933.aicd.packets.ClientboundResponcePacket;
 import io.github.e9ae9933.aicd.packets.ServerboundRequestPacket;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
@@ -17,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main
 {

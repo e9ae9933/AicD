@@ -7,7 +7,9 @@ import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.VersionInfo;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

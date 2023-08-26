@@ -1,6 +1,5 @@
 package io.github.e9ae9933.aicd.l10nkiller;
 
-import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;

@@ -48,11 +48,13 @@ public class Main
 		ArgumentAcceptingOptionSpec<String> dir=optionParser.accepts("dir").withRequiredArg();
 		ArgumentAcceptingOptionSpec<String> textureDir=optionParser.accepts("textureDir").withRequiredArg();
 		OptionSpec<Void> delete=optionParser.accepts("delete");
+		OptionSpec<Void> noExtra=optionParser.accepts("noExtra");
 		OptionSet optionSet=optionParser.parse(args);
 		File outputDir=new File(optionSet.valueOf(output)/*u*/);
 		File pxlsDir=new File(optionSet.valueOf(dir));
 		File resourcesDir=new File(optionSet.valueOf(textureDir));
 		boolean shouldDelete=optionSet.has(delete);
+		boolean writeExtra=optionSet.has(noExtra)==false;
 		if(outputDir.isDirectory()&&pxlsDir.isDirectory()&&resourcesDir.isDirectory())
 		{
 			int n=Runtime.getRuntime().availableProcessors();
@@ -80,12 +82,15 @@ public class Main
 						s.shouldDelete = shouldDelete;
 						s.externalResourcesDir = resourcesDir;
 						s.pxlsName = file.getName();
+						s.writeExtra=writeExtra;
 						PxlCharacter chara = new PxlCharacter(buf, s);
 						File to = new File(outputDir, file.getName().substring(0, file.getName().lastIndexOf(".")));
 						//System.out.println("output into " + to.getAbsolutePath());
 						to.mkdirs();
 						chara.export(to, s);
 						System.out.println("Exported " + file.getName());
+						if(shouldDelete)
+							file.delete();
 					}
 					catch (Exception e)
 					{

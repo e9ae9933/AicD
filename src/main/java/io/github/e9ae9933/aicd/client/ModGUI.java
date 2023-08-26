@@ -2,7 +2,9 @@ package io.github.e9ae9933.aicd.client;
 
 import io.github.e9ae9933.aicd.ModInfo;
 import io.github.e9ae9933.aicd.Utils;
-import io.github.e9ae9933.aicd.packets.*;
+import io.github.e9ae9933.aicd.packets.ClientboundRejectPacket;
+import io.github.e9ae9933.aicd.packets.ClientboundResponcePacket;
+import io.github.e9ae9933.aicd.packets.Packet;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.*;

@@ -1,8 +1,8 @@
 package io.github.e9ae9933.aicd.client;
 
 import io.github.e9ae9933.aicd.Constants;
-import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.NoelByteBuffer;
+import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.modifier.NoelElement;
 
 import javax.swing.*;

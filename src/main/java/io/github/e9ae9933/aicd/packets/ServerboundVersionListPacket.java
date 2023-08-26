@@ -1,19 +1,6 @@
 package io.github.e9ae9933.aicd.packets;
 
-import com.google.gson.reflect.TypeToken;
-import io.github.e9ae9933.aicd.Policy;
-import io.github.e9ae9933.aicd.VersionInfo;
 import io.github.e9ae9933.aicd.server.Database;
-import io.github.e9ae9933.aicd.server.Main;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ServerboundVersionListPacket extends Packet
 {

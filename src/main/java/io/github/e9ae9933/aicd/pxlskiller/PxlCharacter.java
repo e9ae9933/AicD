@@ -7,8 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PxlCharacter
@@ -16,7 +16,7 @@ public class PxlCharacter
 	//List<PxlImage> images=new ArrayList<>();
 	PxlPose[] poses;
 	PxlImageAtlas[] atlases;
-	PxlCharacter(File dir,Settings s)
+	public PxlCharacter(File dir,Settings s)
 	{
 		s.target=this;
 		List<File> f=Arrays.stream(dir.listFiles()).filter(ff->ff.isDirectory()).collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class PxlCharacter
 	}
 	return -1;
 	}
-	PxlCharacter(NoelByteBuffer b,Settings s)
+	public PxlCharacter(NoelByteBuffer b, Settings s)
 	{
 		s.tasksToBeDone.clear();
 		// header

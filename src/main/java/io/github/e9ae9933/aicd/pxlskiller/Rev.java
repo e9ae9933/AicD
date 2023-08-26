@@ -1,21 +1,17 @@
 package io.github.e9ae9933.aicd.pxlskiller;
 
-import io.github.e9ae9933.aicd.NoelByteBuffer;
 import io.github.e9ae9933.aicd.Pair;
-import io.github.e9ae9933.aicd.Utils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,7 +38,7 @@ public class Rev
 		NoelByteBuffer.endAll();
 		character.export(new File("export"),new Settings());*/
 
-		args="--dir F:\\work\\master\\pxls --output F:\\test".split(" ");
+		//args="--dir F:\\work\\master\\pxls --output F:\\test".split(" ");
 		long time=System.currentTimeMillis();
 		System.out.println("Process start with args "+args.length+" "+Arrays.toString(args));
 		OptionParser optionParser=new OptionParser();

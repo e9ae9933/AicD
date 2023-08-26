@@ -5,8 +5,8 @@ import io.github.e9ae9933.aicd.Pair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class NoelArray extends NoelElement

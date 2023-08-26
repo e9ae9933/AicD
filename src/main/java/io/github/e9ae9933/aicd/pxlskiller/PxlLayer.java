@@ -7,6 +7,7 @@ import io.github.e9ae9933.aicd.Utils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -155,7 +156,7 @@ public class PxlLayer
 		PxlLayer layer=s.referenceMap.get(new Pair<>(id,id2));
 		if(layer==null)
 		{
-			System.out.println("WARNING: layer null: " + id + " " + id2 + " for " + name);
+			//System.out.println("WARNING: layer null: " + id + " " + id2 + " for " + name);
 			s.referenceMap.put(new Pair<>(id,id2),this);
 			//to not do: is it correct?
 			//type^=1;
@@ -265,7 +266,9 @@ public class PxlLayer
 		{
 			String name = "layer_" + idl + "_" + describe();
 			FileOutputStream fos = new FileOutputStream(new File(dir, name + ".png"));
-			ImageIO.write(getImage(s), "png", fos);
+			BufferedOutputStream bos=new BufferedOutputStream(fos);
+			ImageIO.write(getImage(s), "png", bos);
+			bos.close();
 			fos.close();
 		}
 		else {
@@ -275,10 +278,13 @@ public class PxlLayer
 				System.out.println("WARNING: "+" why -1 "+dir+" "+name);
 			fos.write(s.gson.toJson(this).getBytes(StandardCharsets.UTF_8));
 			fos.close();
-			BufferedImage img=getImage(s);
-			FileOutputStream fos2=new FileOutputStream(new File(dir,name+"_"+img.getWidth()+","+img.getHeight()+"_NO_NEED_TO_MODIFY"+".png"));
-			ImageIO.write(img,"png",fos2);
-			fos2.close();
+			if(s.writeExtra)
+			{
+				BufferedImage img=getImage(s);
+				FileOutputStream fos2 = new FileOutputStream(new File(dir, name + "_" + img.getWidth() + "," + img.getHeight() + "_NO_NEED_TO_MODIFY" + ".png"));
+				ImageIO.write(img, "png", fos2);
+				fos2.close();
+			}
 		}
 
 	}

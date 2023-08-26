@@ -1,15 +1,11 @@
 package io.github.e9ae9933.aicd.server;
 
-import com.google.gson.JsonObject;
 import io.github.e9ae9933.aicd.SocketHandler;
 import io.github.e9ae9933.aicd.packets.ClientboundKeepalivePacket;
 import io.github.e9ae9933.aicd.packets.ClientboundRejectPacket;
 import io.github.e9ae9933.aicd.packets.Packet;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class Client
 {

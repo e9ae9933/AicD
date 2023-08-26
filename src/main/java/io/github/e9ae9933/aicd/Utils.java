@@ -2,9 +2,8 @@ package io.github.e9ae9933.aicd;
 
 import javax.swing.*;
 import java.io.*;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.function.Supplier;
 
 public class Utils
 {
@@ -24,15 +23,42 @@ public class Utils
 	{
 		try
 		{
-			byte[] b = new byte[is.available()];
-			is.read(b);
-			return b;
+			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+			BufferedInputStream bis=new BufferedInputStream(is);
+			byte[] b=new byte[8192];
+			int len;
+			while((len=bis.read(b))>0)
+				bos.write(b,0,len);
+			return bos.toByteArray();
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	public static void writeAllUTFString(File file,String s)
+	{
+		ignoreExceptions(()->{
+			FileOutputStream fos=new FileOutputStream(file);
+			fos.write(s.getBytes(StandardCharsets.UTF_8));
+			fos.close();
+		});
+	}
+	public static void writeAllBytes(File file,byte[] b)
+	{
+		ignoreExceptions(()->{
+			FileOutputStream fos=new FileOutputStream(file);
+			fos.write(b);
+			fos.close();
+		});
+	}
+	public static String readAllUTFString(InputStream is)
+	{
+		return new String(readAllBytes(is), StandardCharsets.UTF_8);
+	}
+	public static String readAllUTFString(File file)
+	{
+		return new String(readAllBytes(file), StandardCharsets.UTF_8);
 	}
 	public static InputStream readFromResources(String name,boolean create)
 	{
@@ -154,7 +180,7 @@ public class Utils
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
@@ -166,7 +192,7 @@ public class Utils
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}

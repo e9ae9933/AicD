@@ -1,18 +1,15 @@
 package io.github.e9ae9933.aicd.client;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.e9ae9933.aicd.ModInfo;
 import io.github.e9ae9933.aicd.SocketHandler;
 import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.packets.*;
 
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Handler

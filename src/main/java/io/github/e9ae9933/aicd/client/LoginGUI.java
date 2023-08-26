@@ -1,8 +1,8 @@
 package io.github.e9ae9933.aicd.client;
 
 import io.github.e9ae9933.aicd.packets.ClientboundLoginPacket;
-import io.github.e9ae9933.aicd.packets.Packet;
 import io.github.e9ae9933.aicd.packets.ClientboundRejectPacket;
+import io.github.e9ae9933.aicd.packets.Packet;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

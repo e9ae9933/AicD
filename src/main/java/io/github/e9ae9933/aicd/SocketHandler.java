@@ -3,9 +3,7 @@ package io.github.e9ae9933.aicd;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.e9ae9933.aicd.packets.ClientboundKeepalivePacket;
-import io.github.e9ae9933.aicd.packets.ClientboundRejectPacket;
 import io.github.e9ae9933.aicd.packets.Packet;
-import io.github.e9ae9933.aicd.server.Main;
 
 import java.io.IOException;
 import java.io.InputStream;

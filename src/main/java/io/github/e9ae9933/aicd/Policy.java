@@ -7,6 +7,10 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.snakeyaml.engine.v2.api.Dump;
+import org.snakeyaml.engine.v2.api.DumpSettings;
+import org.snakeyaml.engine.v2.api.Load;
+import org.snakeyaml.engine.v2.api.LoadSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +58,8 @@ public class Policy
 			return new File(in.nextString());
 		}
 	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().disableHtmlEscaping().create();
+	public static Load load= new Load(LoadSettings.builder().setParseComments(true).build());
+	public static Dump dump=new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
 	public static boolean isUsernameValid(String s)
 	{
 		if(s==null)

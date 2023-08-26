@@ -3,7 +3,6 @@ package io.github.e9ae9933.aicd.packets;
 import io.github.e9ae9933.aicd.Utils;
 
 import java.net.URL;
-import java.util.function.Supplier;
 
 @Deprecated
 public class ServerboundRequestURLPacket extends Packet

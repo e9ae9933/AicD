@@ -3,13 +3,11 @@ package io.github.e9ae9933.aicd.pxlskiller;
 import io.github.e9ae9933.aicd.Pair;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.IntFunction;
 
 public class RectPackingAtlas
 {

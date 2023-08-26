@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 public class Settings
 {
-	Map<Pair<Integer,Double>,Pair<PxlImageAtlas, PxlImageAtlas.Uv>> idMap;
+	Map<Pair<Integer,Double>,Pair<PxlImageAtlas, PxlImageAtlas.Uv>> idMap=new LinkedHashMap<>();
 	Map<Pair<Integer,Double>,PxlLayer> referenceMap=new LinkedHashMap<>();
 	//List<PxlLayer> needReference=new ArrayList<>();
 	List<Consumer<Settings>> tasksToBeDone=new ArrayList<>();
@@ -27,6 +27,7 @@ public class Settings
 	Gson gson= Policy.gson;
 	File externalResourcesDir;
 	String pxlsName;
-	boolean shouldDelete;
+	boolean shouldDelete=false;
+	boolean writeExtra=false;
 	Random random=new Random();
 }

@@ -4,7 +4,6 @@ import io.github.e9ae9933.aicd.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
 
 public class RectPacking
 {
