@@ -4,6 +4,7 @@ import io.github.e9ae9933.aicd.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -80,6 +81,28 @@ public interface FileUtils
 		{
 			return false;
 		}
+	}
+	default String sha1(byte[] b)
+	{
+		return Utils.ignoreExceptions(()->
+		{
+			StringBuilder sb=new StringBuilder();
+			byte[] target=MessageDigest.getInstance("sha1").digest(b);
+			for(byte b1:target)
+				sb.append(String.format("%02X", b1));
+			return sb.toString();
+		});
+	}
+	default String gitHash(File file)
+	{
+		if(file.length()>Integer.MAX_VALUE)
+			throw new RuntimeException("PLEASE DON'T NOOGIE THE INT: "+file);
+		return Utils.ignoreExceptions(()->{
+			ByteArrayOutputStream baos=new ByteArrayOutputStream();
+			baos.write(String.format("blob %d\0", file.length()).getBytes(StandardCharsets.UTF_8));
+			baos.write(Utils.readAllBytes(file));
+			return sha1(baos.toByteArray());
+		});
 	}
 	default String md5(byte[] b)
 	{

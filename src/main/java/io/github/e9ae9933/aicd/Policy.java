@@ -41,7 +41,7 @@ public class Policy
 				throw new IOException(e);
 			}
 		}
-	})).registerTypeAdapterFactory(TypeAdapters.newFactory(File.class, new TypeAdapter<File>()
+	})).registerTypeHierarchyAdapter(File.class,new TypeAdapter<File>()
 	{
 		@Override
 		public void write(JsonWriter out, File value) throws IOException
@@ -57,7 +57,7 @@ public class Policy
 		{
 			return new File(in.nextString());
 		}
-	})).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().disableHtmlEscaping().create();
+	}).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().disableHtmlEscaping().create();
 	public static Load load= new Load(LoadSettings.builder().setParseComments(true).build());
 	public static Dump dump=new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
 	public static boolean isUsernameValid(String s)

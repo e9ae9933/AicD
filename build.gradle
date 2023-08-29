@@ -17,6 +17,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'net.sf.jopt-simple:jopt-simple:6.0-alpha-3'
     implementation 'org.snakeyaml:snakeyaml-engine:2.4'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
 }
 
 test {

@@ -43,7 +43,8 @@ public class Assets implements FileUtils
 			Git git=getGit();
 			git.call(
 					"add",
-					".");
+					".",
+					"-v");
 			System.out.println("git commit");
 			git.call(
 					"-c","committer.name=AliceInCradle toolbox",
@@ -67,13 +68,15 @@ public class Assets implements FileUtils
 			git.call("gc");
 		});
 	}
-	public void gitDiff(OutputStream os)
+	public void gitDiff(OutputStream os,File temp)
 	{
 		System.out.println("git diff");
 		Utils.ignoreExceptions(()->{
 			Git git=getGit();
 			git.call("add","--intent-to-add",".");
-			os.write(git.call("diff","-p","--binary"));
+			git.call("diff","-p","--binary",//"-3",
+					"--output",temp.getAbsolutePath());
+			os.write(Utils.readAllBytes(temp));
 		});
 	}
 	public File getDir()

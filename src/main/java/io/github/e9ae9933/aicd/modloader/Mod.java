@@ -20,14 +20,14 @@ class Test
 {
 	public static void main(String[] args) throws Exception
 	{
-		File dir= new File("Z:\\work\\AnotherPlugin");
-		Mod mod=Mod.readMod(dir);
-//		mod.getAssets().gitInit();
-//		Mod mod=Mod.createMod("AnotherPlugin",dir);
-//		mod.initMod(new File("F:\\work\\origin"), new File("F:\\AliceInCradle_Data\\StreamingAssets\\localization"));
-		FileOutputStream fos=new FileOutputStream("test.zip");
-		mod.diffAll(fos);
-		fos.close();
+		File dir= new File("F:\\work\\AnotherPlugin");
+//		Mod mod=Mod.readMod(dir);
+		Mod mod=Mod.createMod("AnotherPlugin",dir);
+		mod.initMod(new File("F:\\work\\unpack"), new File("F:\\AliceInCradle_Data\\StreamingAssets\\localization"));
+		mod.getAssets().gitInit();
+//		FileOutputStream fos=new FileOutputStream("test.zip");
+//		mod.diffAll(fos);
+//		fos.close();
 	}
 }
 public class Mod implements FileUtils
@@ -41,6 +41,7 @@ public class Mod implements FileUtils
 	int apiVersion;
 	String[] depend;
 	String[] softDepend;
+	String assetsVersion;
 	private Mod(){}
 	public static Mod readMod(File dir)
 	{
@@ -77,20 +78,6 @@ public class Mod implements FileUtils
 	{
 		System.out.println("creating directories");
 		createDirectories();
-		System.out.println("construction info");
-		Utils.ignoreExceptions(()->
-				{
-					FileOutputStream fos = new FileOutputStream(new File(dir, "info.json"));
-					fos.write(Policy.gson.toJson(this).getBytes(StandardCharsets.UTF_8));
-					fos.close();
-					FileOutputStream fos2=new FileOutputStream(new File(dir,"pack.png"));
-					BufferedImage icon=new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
-					Graphics g=icon.getGraphics();
-					g.setColor(Color.WHITE);
-					g.fillRect(0,0,16,16);
-					ImageIO.write(icon,"png",fos2);
-					fos2.close();
-				});
 		System.out.println("initializing assets");
 		initAssets(unpacked);
 		System.out.println("initializing translations");
@@ -99,6 +86,20 @@ public class Mod implements FileUtils
 		initPlugins();
 		System.out.println("assets git init");
 		getAssets().gitInit();
+		System.out.println("construction info");
+		Utils.ignoreExceptions(()->
+		{
+			FileOutputStream fos = new FileOutputStream(new File(dir, "info.json"));
+			fos.write(Policy.gson.toJson(this).getBytes(StandardCharsets.UTF_8));
+			fos.close();
+			FileOutputStream fos2=new FileOutputStream(new File(dir,"pack.png"));
+			BufferedImage icon=new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
+			Graphics g=icon.getGraphics();
+			g.setColor(Color.WHITE);
+			g.fillRect(0,0,16,16);
+			ImageIO.write(icon,"png",fos2);
+			fos2.close();
+		});
 	}
 	public void createDirectories()
 	{
@@ -116,6 +117,8 @@ public class Mod implements FileUtils
 	{
 		Utils.ignoreExceptions(()->
 		{
+			Map<String,String> mp= (Map<String, String>) Policy.load.loadFromString(Utils.readAllUTFString(new File(unpacked,"info.yml")));
+			assetsVersion=mp.get("aliceincradle_version");
 			boolean createAssets=true;
 			Assets origin = getCacheOriginAssets();
 			if (!createAssets)
@@ -152,7 +155,7 @@ public class Mod implements FileUtils
 			zos.putNextEntry(new ZipEntry("patch.patch"));
 			//get changed pxls
 
-			getAssets().gitDiff(zos);
+			getAssets().gitDiff(zos,new File(getCacheDir(),"patch.patch"));
 
 			zos.putNextEntry(new ZipEntry("translations.json"));
 			Map<String,Map<String,String>> trans=diffTranslations();
@@ -160,6 +163,13 @@ public class Mod implements FileUtils
 
 			zos.putNextEntry(new ZipEntry("info.json"));
 			zos.write(Policy.gson.toJson(Mod.this).getBytes(StandardCharsets.UTF_8));
+
+			File plugin=new File(getCacheDir(),"plugin.dll");
+			if(plugin.isFile())
+			{
+				zos.putNextEntry(new ZipEntry("plugin.dll"));
+				zos.write(Utils.readAllBytes(plugin));
+			}
 
 			if(new File(getDir(),"pack.png").isFile())
 			{
@@ -190,6 +200,7 @@ public class Mod implements FileUtils
 	{
 		Utils.ignoreExceptions(()->
 		{
+			Utils.writeAllUTFString(new File(getCacheDir(),"update.bat"),"echo this is update.bat");
 			InputStream is = Utils.readFromResources("SamplePlugin.zip", false);
 			ZipInputStream zis = new ZipInputStream(is);
 			ZipEntry e;

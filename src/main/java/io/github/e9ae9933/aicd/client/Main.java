@@ -193,6 +193,13 @@ public class Main
 	}
 	public static void main(String[] args) throws Exception
 	{
+		int chs=JOptionPane.showConfirmDialog(null,"是否运行开发者模式？\nWill you run developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+		if(chs==0)
+		{
+			io.github.e9ae9933.aicd.modloader.Main.main(args);
+			return;
+		}
+		if(chs==-1) return;
 		new Main(args);
 	}
 }
