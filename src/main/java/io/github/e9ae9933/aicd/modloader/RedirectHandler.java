@@ -284,11 +284,13 @@ public class RedirectHandler implements FileUtils
 							file.close();
 						});
 					});
+			System.out.println("checking translations...");
 			trans.forEach(
 					(k,v)->{
 						Utils.writeAllUTFString(new File(getRedirectTranslationsDir(),k),Policy.dump.dumpToString(v));
 					}
 			);
+			System.out.println("rebuilding pxls...");
 			List<File> toBeRebuilt=Arrays.stream(getRedirectAssets().getPxlsUnpackedDir().listFiles())
 					.parallel()
 					.filter(f->f.isDirectory())

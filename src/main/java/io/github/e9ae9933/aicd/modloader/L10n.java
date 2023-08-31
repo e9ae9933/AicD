@@ -28,13 +28,17 @@ public enum L10n
 	NO_WORKING("未找到工作路径下的开发中模组。\n试试创建新模组？"),
 	FAILED_READING("无法读取或不存在 info.json (可能不是模组目录)"),
 	WORKING("<html>正在创建新模组 %s。<br>这可能需要十分钟甚至九分钟，且可能花费数十分钟。<br>您可以去做一些其它的事情。</html>"),
-	INIT_MOD_FINISH("已完成对模组 %s 的创建。\n用时 %s。\n是否打开模组文件夹？"),INIT_MOD_FINISH_TITLE("创建完成"),
+	INIT_MOD_FINISH("已完成对模组 %s 的创建。\n是否打开模组文件夹？"),INIT_MOD_FINISH_TITLE("创建完成"),
 	BUILDING_MOD("<html>正在构建模组 %s<br>这通常来说会比较快。<br>详细信息请查看日志。<br>懒得做进度条。</html>"),
 	BUILD_MOD_FINISH("已完成对模组 %s 的构建。\n是否打开导出文件夹？"),BUILD_MOD_FINISH_TITLE("构建完成"),
 	BUILD_MOD_FAILED("构建失败，请查看日志。"),
 	INIT_MOD_FAILED("创建失败，请查看日志。"),
 	RUNNING_AIC("<html>正在运行 AliceInCradle。<br>不过在那之前，需要先处理一些模组的事项。<br>下面是可能的输出，也可能没有。</html>"),
-	RUN_AIC("运行 AIC 程序")
+	RUN_AIC("运行 AIC 程序"),
+	TUNA_GIT_FAILED("看起来清华源在更新或者 LatestRelease 没了。或许等一会就好了。"),
+	TASK_FAILED("看起来任务遇到了一些错误。\n您可以加入群聊 907348590 与我们联系，或者尝试自己解决。\n一些可能有用的信息：\n%s"),
+	TASK_FAILED_TITLE("发生错误"),
+	TASK_SUCCESSFUL("任务成功完成。\n耗时 %s"),TASK_SUCCESS_TITLE("任务成功"),
 	;
 	String cn;
 	L10n(String cn)

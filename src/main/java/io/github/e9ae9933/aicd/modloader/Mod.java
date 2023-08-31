@@ -137,9 +137,11 @@ public class Mod implements FileUtils
 								"--textureDir", origin.getTexture2DDir().getAbsolutePath()});
 
 			}
+			System.out.println("creating directories");
 			Assets assets=getAssets();
 			assets.createDirectories();
 //			assets.getPxlsPackedDir().mkdirs();
+			System.out.println("copying files");
 			xcopy(origin.getTextAssetDir(),assets.getTextAssetDir());
 			xcopy(origin.getSpriteDir(),assets.getSpriteDir());
 			xcopy(origin.getTexture2DDir(),assets.getTexture2DDir());

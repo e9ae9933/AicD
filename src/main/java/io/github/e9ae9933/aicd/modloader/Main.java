@@ -17,6 +17,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -244,9 +245,11 @@ public class Main implements FileUtils
 		frame.setVisible(true);
 		return frame;
 	}
-	static void runAliceInCradle(MainConfig config,RedirectHandler redirectHandler)
+	static void runTasks(MainConfig config,RedirectHandler redirectHandler,String info,Runnable task,Runnable successful)
 	{
-		mainFrame.dispose();
+		boolean shouldRefresh=mainFrame!=null;
+		if(shouldRefresh)
+			mainFrame.dispose();
 		JDialog dialog=new JDialog();
 
 		dialog.setLocationRelativeTo(null);
@@ -260,11 +263,15 @@ public class Main implements FileUtils
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				System.exit(12);
+				System.exit(14);
 			}
 		});
 
-		JLabel label=new JLabel(L10n.RUNNING_AIC.toString());
+		String newinfo;
+		if(info.startsWith("<html>"))
+			newinfo=info;
+		else newinfo="<html>"+info.replace("\n","<br>")+"</html>";
+		JLabel label=new JLabel(newinfo);
 		label.setFont(getFont(16));
 		panel.add(label);
 
@@ -296,22 +303,46 @@ public class Main implements FileUtils
 		Thread t=new Thread(()->{
 			try
 			{
-				AICLauncher.main(
-						new String[]{
-								"--dir", config.aicDir.getAbsolutePath(),
-								"--force",
-								"--run",
-								"--block"
-						}
-				);
+				long time=System.currentTimeMillis();
+				System.out.println("Running task "+task.toString());
+				task.run();
+				System.out.println("Task end successfully");
+				long interval=System.currentTimeMillis()-time;
+				JOptionPane.showMessageDialog(null, String.format(L10n.TASK_SUCCESSFUL.toString(), String.format("%d:%02d.%03d",interval/60000,interval/1000%60,interval%1000)),L10n.TASK_SUCCESS_TITLE.toString(), JOptionPane.INFORMATION_MESSAGE);
+				if(successful!=null)
+					successful.run();
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
+				StringWriter sw=new StringWriter();
+				PrintWriter pw=new PrintWriter(sw);
+				e.printStackTrace(pw);
+				pw.flush();
+				pw.close();
+				String str=sw.toString();
+				JOptionPane.showMessageDialog(null, String.format(L10n.TASK_FAILED.toString(), str),L10n.TASK_FAILED_TITLE.toString(), JOptionPane.ERROR_MESSAGE);
+
 			}
-			refreshGUI(config,redirectHandler);
+			dialog.dispose();
+			if(shouldRefresh)
+				refreshGUI(config,redirectHandler);
 		});
 		t.start();
+	}
+	static void runAliceInCradle(MainConfig config,RedirectHandler redirectHandler)
+	{
+		runTasks(config,redirectHandler,L10n.RUNNING_AIC.toString(),
+				()->{
+					AICLauncher.main(
+							new String[]{
+									"--dir", config.aicDir.getAbsolutePath(),
+									"--force",
+									"--run",
+									"--block"
+							}
+					);
+				},null);
 	}
 
 	static boolean createNewMod(MainConfig config, RedirectHandler redirectHandler,JFrame or)
@@ -324,74 +355,14 @@ public class Main implements FileUtils
 			JOptionPane.showMessageDialog(null, L10n.FALSE_MOD_PATH, L10n.INPUT_MOD_NAME_TITLE.toString(), JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-
-//		AtomicBoolean end=new AtomicBoolean(false);
-
-		JDialog dialog=new JDialog(or,false);
-//		dialog.setUndecorated(true);
-		dialog.setLocationRelativeTo(null);
-		JPanel panel=new JPanel();
-		panel.setSize(640,320);
-		panel.setPreferredSize(panel.getSize());
-		panel.setMaximumSize(panel.getSize());
-		dialog.setContentPane(panel);
-		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-		JLabel label=new JLabel(String.format(L10n.WORKING.toString(), str));
-		label.setFont(getFont(16));
-		panel.add(label);
-
-		JTextArea area=new JTextArea("initializing\n");
-		JScrollPane pane=new JScrollPane(area);
-		pane.setPreferredSize(new Dimension(560,420/420*225));
-		panel.add(pane);
-		area.setBorder(new LineBorder(Color.BLACK,1));
-		area.setEditable(false);
-		area.getCaret().setVisible(true);
-//		panel.add(area);
-		dialog.pack();
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
-		dialog.setResizable(false);
-		Consumer<String> consumer=new Consumer<String>()
-		{
-			@Override
-			public synchronized void accept(String s)
-			{
-				area.append(s+"\n");
-//				dialog.pack();
-				area.setCaretPosition(area.getDocument().getLength());
-			}
-		};
-		initLogger(
-				(s)-> consumer.accept(String.format("(%s) [%s] <STDOUT> %s", Thread.currentThread().getName(),new SimpleDateFormat("HH:mm:ss.SSSS").format(new Date()),s)),
-				(s)-> consumer.accept(String.format("(%s) [%s] <STDERR> %s", Thread.currentThread().getName(),new SimpleDateFormat("HH:mm:ss.SSSS").format(new Date()),s)));
-
-
-		Thread thread=new Thread(()->
-				{
-					long time=System.currentTimeMillis();
-					System.out.println("thread start");
-					try
-					{
-						target.mkdirs();
-						Mod mod = Mod.createMod(str, target);
-						mod.initMod(redirectHandler.getUnpackDir(), new File(redirectHandler.getStreamingAssetsDir(), "localization"));
-						System.out.println("finished task without exception..?");
-					} catch (Exception e)
-					{
-						e.printStackTrace();
-						JOptionPane.showMessageDialog(null,L10n.INIT_MOD_FAILED);
-						dialog.dispose();
-						refreshGUI(config,redirectHandler);
-						return;
-					}
-//					end.getAndSet(true);
-					initLogger(null,null);
-					dialog.dispose();
-//					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					long interval=System.currentTimeMillis()-time;
-					int chs=JOptionPane.showConfirmDialog(null, String.format(L10n.INIT_MOD_FINISH.toString(), str, String.format("%d:%02d.%03d", interval/60/1000,interval/1000%60,interval%1000)),L10n.INIT_MOD_FINISH_TITLE.toString(), JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+		runTasks(config,redirectHandler, String.format(L10n.WORKING.toString(), str),
+				()->{
+					target.mkdirs();
+					Mod mod = Mod.createMod(str, target);
+					mod.initMod(redirectHandler.getUnpackDir(), new File(redirectHandler.getStreamingAssetsDir(), "localization"));
+					System.out.println("finished task without exception..?");
+				},()->{
+					int chs=JOptionPane.showConfirmDialog(null, String.format(L10n.INIT_MOD_FINISH.toString(), str),L10n.INIT_MOD_FINISH_TITLE.toString(), JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
 					if(chs==0)
 					{
 						try
@@ -402,10 +373,7 @@ public class Main implements FileUtils
 							e.printStackTrace();
 						}
 					}
-					refreshGUI(config,redirectHandler);
-				}
-		);
-		thread.start();
+				});
 		return true;
 	}
 
@@ -558,21 +526,8 @@ public class Main implements FileUtils
 
 	static void buildMod(Mod mod,MainConfig config,RedirectHandler redirectHandler)
 	{
-		JDialog dialog=new JDialog();
-		JPanel panel=new JPanel();
-		panel.setSize(320,240);
-		panel.setPreferredSize(panel.getSize());
-		dialog.setResizable(false);
-		dialog.setContentPane(panel);
-		dialog.pack();
-		JLabel label=new JLabel(String.format(L10n.BUILDING_MOD.toString(), mod.name));
-		label.setFont(getFont(16));
-		panel.add(label);
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
-		Thread t=new Thread(()->
-		{
-			File file = new File(new File(config.aicDir, "mods"), mod.name + ".zip");
+		File file = new File(new File(config.aicDir, "mods"), mod.name + ".zip");
+		runTasks(config,redirectHandler, String.format(L10n.BUILDING_MOD.toString(), mod.name), ()->{
 			try
 			{
 				FileOutputStream fos = new FileOutputStream(file);
@@ -581,10 +536,9 @@ public class Main implements FileUtils
 			} catch (Exception e)
 			{
 				JOptionPane.showMessageDialog(null, L10n.BUILD_MOD_FAILED);
-				refreshGUI(config,redirectHandler);
 				return;
 			}
-			dialog.dispose();
+		},()->{
 			int chs = JOptionPane.showConfirmDialog(null,
 					String.format(L10n.BUILD_MOD_FINISH.toString(), mod.name),
 					L10n.BUILD_MOD_FINISH_TITLE.toString(), JOptionPane.YES_NO_OPTION);
@@ -599,7 +553,6 @@ public class Main implements FileUtils
 				e.printStackTrace();
 			}
 		});
-		t.start();
 	}
 
 	static void checkRedirect(MainConfig config, RedirectHandler redirectHandler)
@@ -609,10 +562,17 @@ public class Main implements FileUtils
 		int chs = JOptionPane.showConfirmDialog(null, L10n.REDIRECT, L10n.REDIRECT_TITLE.toString(), JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
 		if (chs != 0)
 			System.exit(10);
-		System.out.println("rmdir");
-		redirectHandler.rmdir(redirectHandler.getRedirectDir());
-		System.out.println("initRedirect");
-		redirectHandler.initRedirect();
+		AtomicBoolean ended=new AtomicBoolean(false);
+		Thread t=new Thread(()->{
+			runTasks(config,redirectHandler,L10n.REDIRECT.toString(), ()->{
+				System.out.println("rmdir");
+				redirectHandler.rmdir(redirectHandler.getRedirectDir());
+				System.out.println("initRedirect");
+				redirectHandler.initRedirect();
+			},()->ended.getAndSet(true));
+		});
+		t.start();
+		while(!ended.get())Thread.yield();
 	}
 
 	static void checkNeedRefresh(MainConfig config, RedirectHandler redirectHandler)
@@ -696,77 +656,91 @@ public class Main implements FileUtils
 		int cfm = JOptionPane.showConfirmDialog(null, L10n.NO_GIT, L10n.NO_GIT_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 		if (cfm != 0)
 			System.exit(4);
+		try
+		{
 		HttpsURLConnection con = (HttpsURLConnection) new URL("https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/").openConnection();
 		con.connect();
 		String rt = Utils.readAllUTFString(con.getInputStream());
 		con.disconnect();
 		System.out.println(rt);
-		String ver = rt.split("PortableGit-")[1].split("-")[0];
-		System.out.println(ver);
-		String fileName = "PortableGit-" + ver + "-64-bit.7z.exe";
-		File targetFile = new File(config.aicDir, fileName);
-		URL dl = new URL("https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/" + fileName);
+		String ver=null;
+			ver= rt.split("PortableGit-")[1].split("-")[0];
+			System.out.println(ver);
+			String fileName = "PortableGit-" + ver + "-64-bit.7z.exe";
+			File targetFile = new File(config.aicDir, fileName);
+			URL dl = new URL("https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/" + fileName);
 
-		cfm = JOptionPane.showConfirmDialog(null, String.format(L10n.DL_GIT.toString(), ver, dl.getPath()), L10n.DL_GIT_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-		if (cfm != 0)
-			System.exit(5);
+			cfm = JOptionPane.showConfirmDialog(null, String.format(L10n.DL_GIT.toString(), ver, dl.getPath()), L10n.DL_GIT_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			if (cfm != 0)
+				System.exit(5);
 
-		JProgressBar bar = new JProgressBar();
-		bar.setSize(320, 32);
-		bar.setLocation(0, 0);
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setSize(320, 32);
-		panel.setPreferredSize(panel.getSize());
-		panel.setLocation(0, 0);
-		panel.add(bar);
-		JDialog dialog = new JDialog((Frame) null);
-		dialog.addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent e)
+			JProgressBar bar = new JProgressBar();
+			bar.setSize(320, 32);
+			bar.setLocation(0, 0);
+			JPanel panel = new JPanel();
+			panel.setLayout(null);
+			panel.setSize(320, 32);
+			panel.setPreferredSize(panel.getSize());
+			panel.setLocation(0, 0);
+			panel.add(bar);
+			JDialog dialog = new JDialog((Frame) null);
+			dialog.addWindowListener(new WindowAdapter()
 			{
-				System.exit(6);
+				@Override
+				public void windowClosing(WindowEvent e)
+				{
+					System.exit(6);
+				}
+			});
+			dialog.setContentPane(panel);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
+			bar.setStringPainted(true);
+
+			bar.setString(L10n.DLING.toString());
+			dialog.setTitle(String.format(L10n.DLING_TITLE.toString(), fileName));
+
+			HttpsURLConnection dlcon = (HttpsURLConnection) dl.openConnection();
+			InputStream dis = dlcon.getInputStream();
+			FileOutputStream fos = new FileOutputStream(targetFile);
+			long cont = dlcon.getContentLengthLong();
+
+			bar.setMaximum((int) cont);
+			bar.setValue(0);
+
+			long dled = 0;
+			int len;
+			byte[] buf = new byte[8192];
+			while ((len = dis.read(buf)) != -1)
+			{
+				fos.write(buf, 0, len);
+				dled += len;
+				bar.setValue((int) dled);
+				bar.setString(String.format("%.2f / %.2f MB    %d%%", dled / 1048576.0, cont / 1048576.0, 100L * dled / cont));
 			}
-		});
-		dialog.setContentPane(panel);
-		dialog.pack();
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
-		bar.setStringPainted(true);
+			dlcon.disconnect();
+			fos.close();
+			dialog.setVisible(false);
+			dialog.dispose();
 
-		bar.setString(L10n.DLING.toString());
-		dialog.setTitle(String.format(L10n.DLING_TITLE.toString(), fileName));
-
-		HttpsURLConnection dlcon = (HttpsURLConnection) dl.openConnection();
-		InputStream dis = dlcon.getInputStream();
-		FileOutputStream fos = new FileOutputStream(targetFile);
-		long cont = dlcon.getContentLengthLong();
-
-		bar.setMaximum((int) cont);
-		bar.setValue(0);
-
-		long dled = 0;
-		int len;
-		byte[] buf = new byte[8192];
-		while ((len = dis.read(buf)) != -1)
-		{
-			fos.write(buf, 0, len);
-			dled += len;
-			bar.setValue((int) dled);
-			bar.setString(String.format("%.2f / %.2f MB    %d%%", dled / 1048576.0, cont / 1048576.0, 100L * dled / cont));
+			ProcessBuilder builder = new ProcessBuilder();
+			builder.command(targetFile.getAbsolutePath(), "-o", new File(config.aicDir, "PortableGit").getAbsolutePath(), "-y");
+			builder.inheritIO();
+			Process unzip = builder.start();
+			unzip.waitFor();
+			checkGit(config);
 		}
-		dlcon.disconnect();
-		fos.close();
-		dialog.setVisible(false);
-		dialog.dispose();
-
-		ProcessBuilder builder = new ProcessBuilder();
-		builder.command(targetFile.getAbsolutePath(), "-o", new File(config.aicDir, "PortableGit").getAbsolutePath(), "-y");
-		builder.inheritIO();
-		Process unzip = builder.start();
-		unzip.waitFor();
-		checkGit(config);
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,L10n.TUNA_GIT_FAILED);
+			try{
+				Desktop.getDesktop().browse(new URL("https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/").toURI());
+			}
+			catch (Exception ignored){}
+			System.exit(14);
+		}
 		return;
 //		}
 //		catch (Exception e)
