@@ -73,6 +73,7 @@ public class Assets implements FileUtils
 		System.out.println("git diff");
 		Utils.ignoreExceptions(()->{
 			Git git=getGit();
+			git.call("restore","--staged",".");
 			git.call("add","--intent-to-add",".");
 			git.call("diff","-p","--binary",//"-3",
 					"--output",temp.getAbsolutePath());

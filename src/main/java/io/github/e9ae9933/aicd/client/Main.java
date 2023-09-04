@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 
 public class Main
 {
-	public static Gson gson= Policy.gson;
+	public static Gson gson= Policy.getGson();
 	Handler handler;
 	GUI gui;
 	public static String host=Policy.serverHost;

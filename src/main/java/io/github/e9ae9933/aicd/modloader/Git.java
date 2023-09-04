@@ -17,6 +17,8 @@ public class Git
 	Git() {
 		Arrays.stream(new String[]{
 				"-c", "core.filemode=false",
+				"-c","user.name=AliceInCradle toolbox",
+				"-c","user.email=null@aictoolbox.top"
 //				"-c", "core.autocrlf=false",
 //				"-c", "core.safecrlf=true"
 		}).forEachOrdered(s->def.add(s));

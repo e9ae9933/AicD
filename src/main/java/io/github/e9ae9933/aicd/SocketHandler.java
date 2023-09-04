@@ -48,7 +48,7 @@ public class SocketHandler implements Runnable
 	}
 	public /*synchronized*/ void tick()
 	{
-		Gson gson=Policy.gson;
+		Gson gson= Policy.getGson();
 //		while(alive)
 		if(alive)
 		{
@@ -132,7 +132,7 @@ public class SocketHandler implements Runnable
 		try
 		{
 			OutputStream os = socket.getOutputStream();
-			Gson gson = Policy.gson;
+			Gson gson = Policy.getGson();
 			String s = gson.toJson(packet);
 			byte[] b = s.getBytes(StandardCharsets.UTF_8);
 			int len=b.length;

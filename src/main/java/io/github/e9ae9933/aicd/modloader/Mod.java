@@ -2,6 +2,9 @@ package io.github.e9ae9933.aicd.modloader;
 
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
+import io.github.e9ae9933.aicd.l10nkiller.EventLoader;
+import io.github.e9ae9933.aicd.l10nkiller.MultiLanguageFamilies;
+import io.github.e9ae9933.aicd.l10nkiller.RefreshedEventLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,6 +13,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
@@ -51,7 +55,7 @@ public class Mod implements FileUtils
 			{
 				File file = new File(dir, "info.json");
 				FileInputStream fis=new FileInputStream(file);
-				Mod mod = Policy.gson.fromJson(Utils.readAllUTFString(fis),Mod.class);
+				Mod mod = Policy.getGson().fromJson(Utils.readAllUTFString(fis),Mod.class);
 				fis.close();
 				mod.dir=dir;
 				return mod;
@@ -90,7 +94,7 @@ public class Mod implements FileUtils
 		Utils.ignoreExceptions(()->
 		{
 			FileOutputStream fos = new FileOutputStream(new File(dir, "info.json"));
-			fos.write(Policy.gson.toJson(this).getBytes(StandardCharsets.UTF_8));
+			fos.write(Policy.getGson().toJson(this).getBytes(StandardCharsets.UTF_8));
 			fos.close();
 			FileOutputStream fos2=new FileOutputStream(new File(dir,"pack.png"));
 			BufferedImage icon=new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
@@ -117,7 +121,7 @@ public class Mod implements FileUtils
 	{
 		Utils.ignoreExceptions(()->
 		{
-			Map<String,String> mp= (Map<String, String>) Policy.load.loadFromString(Utils.readAllUTFString(new File(unpacked,"info.yml")));
+			Map<String,String> mp= (Map<String, String>) Policy.getLoad().loadFromString(Utils.readAllUTFString(new File(unpacked,"info.yml")));
 			assetsVersion=mp.get("aliceincradle_version");
 			boolean createAssets=true;
 			Assets origin = getCacheOriginAssets();
@@ -153,7 +157,7 @@ public class Mod implements FileUtils
 		Utils.ignoreExceptions(()->
 		{
 			ZipOutputStream zos=new ZipOutputStream(os);
-			zos.setComment(Policy.gson.toJson(Mod.this));
+			zos.setComment(Policy.getGson().toJson(Mod.this));
 			zos.putNextEntry(new ZipEntry("patch.patch"));
 			//get changed pxls
 
@@ -161,10 +165,16 @@ public class Mod implements FileUtils
 
 			zos.putNextEntry(new ZipEntry("translations.json"));
 			Map<String,Map<String,String>> trans=diffTranslations();
-			zos.write(Policy.gson.toJson(trans).getBytes(StandardCharsets.UTF_8));
+			zos.write(Policy.getGson().toJson(trans).getBytes(StandardCharsets.UTF_8));
+
+			zos.putNextEntry(new ZipEntry("events.json"));
+			MultiLanguageFamilies originalEventTranslations=RefreshedEventLoader.loadMultiLanguageFamiliesFromJson(getCacheOriginalEventTranslationsFile());
+			MultiLanguageFamilies masterEventTranslations=RefreshedEventLoader.loadMultiLanguageFamiliesFromDir(getTranslationsDir());
+			MultiLanguageFamilies diffed=originalEventTranslations.diff(masterEventTranslations);
+			zos.write(Policy.getGson().toJson(diffed).getBytes(StandardCharsets.UTF_8));
 
 			zos.putNextEntry(new ZipEntry("info.json"));
-			zos.write(Policy.gson.toJson(Mod.this).getBytes(StandardCharsets.UTF_8));
+			zos.write(Policy.getGson().toJson(Mod.this).getBytes(StandardCharsets.UTF_8));
 
 			File plugin=new File(getCacheDir(),"plugin.dll");
 			if(plugin.isFile())
@@ -196,6 +206,9 @@ public class Mod implements FileUtils
 					}
 			);
 			xcopy(getCacheTranslationsDir(),getTranslationsDir());
+			MultiLanguageFamilies mlf=RefreshedEventLoader.loadWholeFromAIC(translations.getParentFile().getParentFile().getParentFile());
+			RefreshedEventLoader.writeMultiLanguageFamiliesToJson(getCacheOriginalEventTranslationsFile(),mlf);
+			RefreshedEventLoader.writeMultiLanguageFamiliesToDir(getTranslationsDir(),mlf);
 		});
 	}
 	public void initPlugins()
@@ -229,9 +242,9 @@ public class Mod implements FileUtils
 		ConcurrentHashMap<String,Map<String,String>> rt=new ConcurrentHashMap<>();
 		ConcurrentHashMap<String,Map<String,String>> mem=new ConcurrentHashMap<>();
 		Arrays.stream(getCacheTranslationsDir().listFiles())
-				.parallel()
+//				.parallel()
 				.filter(f->f.isFile())
-				.forEach(
+				.forEachOrdered(
 						f->{
 							mem.put(f.getName(),readTranslationFile(f));
 						}
@@ -260,7 +273,7 @@ public class Mod implements FileUtils
 		return Utils.ignoreExceptions(()->
 		{
 			FileInputStream fis=new FileInputStream(file);
-			Map<String,String> rt= (Map<String, String>) Policy.load.loadFromString(Utils.readAllUTFString(fis));
+			Map<String,String> rt= (Map<String, String>) Policy.getLoad().loadFromString(Utils.readAllUTFString(fis));
 			fis.close();
 			return rt;
 		});
@@ -292,6 +305,10 @@ public class Mod implements FileUtils
 	public File getCacheDir()
 	{
 		return new File(dir,"cache");
+	}
+	public File getCacheOriginalEventTranslationsFile()
+	{
+		return new File(getCacheDir(),"original_event_translations.json");
 	}
 	public File getCacheTranslationsDir()
 	{

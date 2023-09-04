@@ -183,11 +183,6 @@ public class MainGUI
 									String entryName=entry.getName();
 									single.setString(String.format("分析 %s (第 %d 项，共 %d 项)", entryName.substring(entryName.lastIndexOf('/')+1),extr++,entries.size()));
 									single.setValue(extr);
-									if(debug.isSelected()&&entryName.endsWith("/_debug.txt"))
-									{
-										System.out.println("skipped _debug.txt");
-										continue;
-									}
 									if(!entryName.startsWith(located))
 										continue;
 									String fileName=Utils.getGamePath(false).getAbsolutePath()+File.separatorChar+entryName.substring(located.length());
@@ -197,6 +192,11 @@ public class MainGUI
 										continue;
 									}
 									InputStream is=zipFile.getInputStream(entry);
+									if(new File(fileName).exists()&&debug.isSelected()&&entryName.endsWith("/_debug.txt"))
+									{
+										System.out.println("skipped _debug.txt");
+										continue;
+									}
 									FileOutputStream fos=new FileOutputStream(fileName);
 									//System.out.println(String.format("%s to %s", entryName,fileName));
 									byte[] b=new byte[1024];

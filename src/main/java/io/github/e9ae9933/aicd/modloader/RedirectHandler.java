@@ -3,17 +3,16 @@ package io.github.e9ae9933.aicd.modloader;
 import com.google.gson.reflect.TypeToken;
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
+import io.github.e9ae9933.aicd.l10nkiller.EventLoader;
+import io.github.e9ae9933.aicd.l10nkiller.MultiLanguageFamilies;
+import io.github.e9ae9933.aicd.l10nkiller.RefreshedEventLoader;
 import io.github.e9ae9933.aicd.pxlskiller.PxlCharacter;
 import io.github.e9ae9933.aicd.pxlskiller.Settings;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,6 +36,10 @@ public class RedirectHandler implements FileUtils
 	File getRedirectDir()
 	{
 		return new File(getWorkDir(),"redirect");
+	}
+	File getRedirectOriginalTranslationsFile()
+	{
+		return new File(getRedirectDir(),"original_event_translations.json");
 	}
 	File getRedirectInfoFile()
 	{
@@ -118,16 +121,19 @@ public class RedirectHandler implements FileUtils
 							"--output",getOriginalTranslationsDir().getAbsolutePath()
 					}
 			);
+			System.out.println("loading event translations...");
+			MultiLanguageFamilies mlf=RefreshedEventLoader.loadWholeFromAIC(aicDir);
+			RefreshedEventLoader.writeMultiLanguageFamiliesToJson(getRedirectOriginalTranslationsFile(),mlf);
 			System.out.println("xcopy...");
 			xcopy(getOriginalTranslationsDir(),getRedirectTranslationsDir());
 			RedirectInfo info=new RedirectInfo(RedirectHandler.this);
 //			info.modsMD5=null;
-			Utils.writeAllUTFString(getRedirectInfoFile(), Policy.gson.toJson(info));
+			Utils.writeAllUTFString(getRedirectInfoFile(), Policy.getGson().toJson(info));
 		});
 	}
 	boolean checkNeedUpdate()
 	{
-		RedirectInfo info=Policy.gson.fromJson(Utils.readAllUTFString(getRedirectInfoFile()),RedirectInfo.class);
+		RedirectInfo info= Policy.getGson().fromJson(Utils.readAllUTFString(getRedirectInfoFile()),RedirectInfo.class);
 //		System.out.println(info.modsMD5);
 		if(info.needUpdate)
 			return true;
@@ -153,25 +159,37 @@ public class RedirectHandler implements FileUtils
 			getModsDir().mkdirs();
 			Assets assets = getRedirectAssets();
 			Git git=assets.getGit();
+			System.out.println("git reset");
 			git.call("reset",
 					"--hard",
 					"Original"
 					);
+			System.out.println("git clean");
+			git.call("clean",
+					"--force",
+					"-d");
+			System.out.println("loading translations");
 
 			ConcurrentHashMap<String, Map<String,String>> trans=new ConcurrentHashMap<>();
 			Arrays.stream(getOriginalTranslationsDir().listFiles())
-					.parallel()
+//					.parallel()
 					.filter(f->f.isFile())
 					.forEach(
 							f->{
+								System.out.println("loading "+f);
 								trans.put(f.getName(),Mod.readTranslationFile(f));
 							}
 					);
+
+			MultiLanguageFamilies multiLanguageFamilies= RefreshedEventLoader.loadMultiLanguageFamiliesFromJson(getRedirectOriginalTranslationsFile());
+
+			System.out.println("loading dll");
 			Arrays.stream(getPluginsDir().listFiles())
 					.parallel()
 					.filter(f->f.isFile()&&f.getName().endsWith(".dll"))
 					.forEach(f->f.delete());
-			RedirectInfo info=Policy.gson.fromJson(Utils.readAllUTFString(getRedirectInfoFile()),RedirectInfo.class);
+			RedirectInfo info= Policy.getGson().fromJson(Utils.readAllUTFString(getRedirectInfoFile()),RedirectInfo.class);
+			List<String> fails=new ArrayList<>();
 			Arrays.stream(getModsDir().listFiles())
 					.filter(f->f.isFile()&&f.getName().endsWith(".zip"))
 					.forEachOrdered(f->{
@@ -184,7 +202,7 @@ public class RedirectHandler implements FileUtils
 								file.close();
 								return;
 							}
-							Mod mod=Policy.gson.fromJson(Utils.readAllUTFString(file.getInputStream(file.getEntry("info.json"))),Mod.class);
+							Mod mod= Policy.getGson().fromJson(Utils.readAllUTFString(file.getInputStream(file.getEntry("info.json"))),Mod.class);
 							// patch.patch
 							if(file.getEntry("patch.patch")!=null)
 							{
@@ -244,7 +262,7 @@ public class RedirectHandler implements FileUtils
 								fos.close();
 								cin.close();
 								bais.close();
-								git.call(
+								int rt=git.call(
 										"apply",
 //										"--index",
 										"--binary",
@@ -253,13 +271,15 @@ public class RedirectHandler implements FileUtils
 										"-v",
 										temp.getAbsolutePath()
 								);
+								if(rt!=0)
+									fails.add(mod.name);
 //								temp.delete();
 							}
 
 							// translations.json
 							if(file.getEntry("translations.json")!=null)
 							{
-								Map<String, Map<String, String>> trmap = Policy.gson.fromJson(Utils.readAllUTFString(file.getInputStream(file.getEntry("translations.json"))), new TypeToken<Map<String, Map<String, String>>>()
+								Map<String, Map<String, String>> trmap = Policy.getGson().fromJson(Utils.readAllUTFString(file.getInputStream(file.getEntry("translations.json"))), new TypeToken<Map<String, Map<String, String>>>()
 								{
 								});
 								trmap.forEach(
@@ -270,6 +290,12 @@ public class RedirectHandler implements FileUtils
 											else trans.put(k, v);
 										}
 								);
+							}
+							if(file.getEntry("events.json")!=null)
+							{
+								String str=Utils.readAllUTFString(file.getInputStream(file.getEntry("events.json")));
+								MultiLanguageFamilies diff=Policy.getGson().fromJson(str,MultiLanguageFamilies.class);
+								multiLanguageFamilies.merge(diff);
 							}
 
 							//plugin.dll
@@ -284,12 +310,22 @@ public class RedirectHandler implements FileUtils
 							file.close();
 						});
 					});
+			if(fails.size()>0)
+			{
+				int chs=JOptionPane.showConfirmDialog(null, String.format(L10n.GIT_FAILED.toString(), fails.toString()),L10n.GIT_FAILED_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+				if(chs!=0)
+					throw new RuntimeException("User cancelled launching");
+			}
 			System.out.println("checking translations...");
 			trans.forEach(
 					(k,v)->{
-						Utils.writeAllUTFString(new File(getRedirectTranslationsDir(),k),Policy.dump.dumpToString(v));
+						System.out.println("checking "+k);
+						Utils.writeAllUTFString(new File(getRedirectTranslationsDir(),k), Policy.getDump().dumpToString(v));
 					}
 			);
+			System.out.println("event translations writing");
+			File evfile=new File(getRedirectDir(),"event_translations.yml");
+			Utils.writeAllUTFString(evfile, Policy.getDump().dumpToString(multiLanguageFamilies));
 			System.out.println("rebuilding pxls...");
 			List<File> toBeRebuilt=Arrays.stream(getRedirectAssets().getPxlsUnpackedDir().listFiles())
 					.parallel()
@@ -325,7 +361,7 @@ public class RedirectHandler implements FileUtils
 			System.out.println("reading info");
 			info.modsMD5=md5Dir(getModsDir());
 			info.needUpdate=false;
-			Utils.writeAllUTFString(getRedirectInfoFile(),Policy.gson.toJson(info));
+			Utils.writeAllUTFString(getRedirectInfoFile(), Policy.getGson().toJson(info));
 			System.out.println("All done");
 		});
 	}

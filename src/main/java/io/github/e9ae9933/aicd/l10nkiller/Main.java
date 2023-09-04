@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 class test
@@ -61,10 +62,9 @@ public class Main
 					String ans = dump.dumpToString(target);
 					FileOutputStream fos = new FileOutputStream(new File(outputDir,name + ".yml"));
 					fos.write(ans.getBytes(StandardCharsets.UTF_8));
-					fos.close();/*
-					FileOutputStream fos2 = new FileOutputStream(name + ".json");
-					fos2.write(Policy.gson.toJson(target).getBytes(StandardCharsets.UTF_8));
-					fos2.close();*/
+					fos.close();
+					//okay now we destruct ev
+//					RefreshedEventLoader.loadWholeFromAIC()
 				}
 				catch (Exception e)
 				{

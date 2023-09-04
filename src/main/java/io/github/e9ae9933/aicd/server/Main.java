@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class Main
 {
-	public static Gson gson= Policy.gson;
+	public static Gson gson= Policy.getGson();
 	public static Set<Client> clients= Collections.synchronizedSet(new HashSet<>());
 	public static int port=10051;
 	public static boolean integrated=false;

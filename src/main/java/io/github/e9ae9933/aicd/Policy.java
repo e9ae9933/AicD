@@ -19,7 +19,7 @@ public class Policy
 {
 	public static String serverHost="43.138.15.251";
 	public static int serverPort=10051;
-	public static Gson gson=new GsonBuilder().registerTypeAdapterFactory(TypeAdapters.newFactory(Class.class, new TypeAdapter<Class>()
+	private static Gson gson=new GsonBuilder().registerTypeAdapterFactory(TypeAdapters.newFactory(Class.class, new TypeAdapter<Class>()
 	{
 		@Override
 		public void write(JsonWriter out, Class value) throws IOException
@@ -58,8 +58,8 @@ public class Policy
 			return new File(in.nextString());
 		}
 	}).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)/*.serializeNulls()*/.setPrettyPrinting().serializeSpecialFloatingPointValues().disableHtmlEscaping().create();
-	public static Load load= new Load(LoadSettings.builder().setParseComments(true).build());
-	public static Dump dump=new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
+//	private static Load load= new Load(LoadSettings.builder().setParseComments(true).build());
+//	private static Dump dump=new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
 	public static boolean isUsernameValid(String s)
 	{
 		if(s==null)
@@ -79,5 +79,20 @@ public class Policy
 		if(s.length()==0)
 			return false;
 		return true;
+	}
+
+	public static Gson getGson()
+	{
+		return gson;
+	}
+
+	public static Load getLoad()
+	{
+		return new Load(LoadSettings.builder().setParseComments(true).build());
+	}
+
+	public static Dump getDump()
+	{
+		return new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
 	}
 }

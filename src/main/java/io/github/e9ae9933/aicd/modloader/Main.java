@@ -98,7 +98,7 @@ public class Main implements FileUtils
 			MainConfig config;
 			if (!getConfigFile().isFile())
 				config = new MainConfig();
-			else config = Policy.gson.fromJson(Utils.readAllUTFString(getConfigFile()), MainConfig.class);
+			else config = Policy.getGson().fromJson(Utils.readAllUTFString(getConfigFile()), MainConfig.class);
 			while (config.aicDir == null || !config.aicDir.isDirectory())
 			{
 //				JDialog
@@ -117,7 +117,7 @@ public class Main implements FileUtils
 					config.aicDir = chooseDir();
 			}
 			while (cid != JOptionPane.OK_OPTION);
-			Utils.writeAllUTFString(getConfigFile(), Policy.gson.toJson(config));
+			Utils.writeAllUTFString(getConfigFile(), Policy.getGson().toJson(config));
 			checkGit(config);
 			RedirectHandler redirectHandler = new RedirectHandler(config.aicDir);
 			redirectHandler.createDirectories();
@@ -535,8 +535,10 @@ public class Main implements FileUtils
 				fos.close();
 			} catch (Exception e)
 			{
+				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, L10n.BUILD_MOD_FAILED);
-				return;
+				throw new RuntimeException(e);
+//				return;
 			}
 		},()->{
 			int chs = JOptionPane.showConfirmDialog(null,

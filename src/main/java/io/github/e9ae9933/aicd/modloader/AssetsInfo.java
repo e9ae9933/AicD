@@ -21,7 +21,7 @@ public class AssetsInfo implements FileUtils
 		if(!unpackInfo.isFile())
 			throw new RuntimeException("no "+unpackInfo+" found");
 //		File unpackInfo=new File(assets.getDir().getParentFile(),"cache/origin/info.yml");
-		Map<String,Object> infos= (Map<String, Object>) Policy.load.loadFromString(Utils.readAllUTFString(unpackInfo));
+		Map<String,Object> infos= (Map<String, Object>) Policy.getLoad().loadFromString(Utils.readAllUTFString(unpackInfo));
 		unpackTime=Long.parseLong(infos.get("time").toString());
 		unpackTimeFormatted=infos.get("time_formatted").toString();
 		aliceInCradleVersion=infos.get("aliceincradle_version").toString();

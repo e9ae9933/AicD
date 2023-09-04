@@ -24,7 +24,7 @@ public class Settings
 	Map<Pair<Integer,Double>, BufferedImage> idImage=new LinkedHashMap<>();
 
 
-	Gson gson= Policy.gson;
+	Gson gson= Policy.getGson();
 	File externalResourcesDir;
 	String pxlsName;
 	boolean shouldDelete=false;

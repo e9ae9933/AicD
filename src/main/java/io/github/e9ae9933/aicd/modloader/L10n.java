@@ -39,6 +39,7 @@ public enum L10n
 	TASK_FAILED("看起来任务遇到了一些错误。\n您可以加入群聊 907348590 与我们联系，或者尝试自己解决。\n一些可能有用的信息：\n%s"),
 	TASK_FAILED_TITLE("发生错误"),
 	TASK_SUCCESSFUL("任务成功完成。\n耗时 %s"),TASK_SUCCESS_TITLE("任务成功"),
+	GIT_FAILED("这些模组应用可能失败了，并且它们可能不会正常运行：\n%s\n确定要继续吗？"),GIT_FAILED_TITLE("模组错误"),
 	;
 	String cn;
 	L10n(String cn)
