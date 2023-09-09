@@ -587,16 +587,25 @@ public class Main implements FileUtils
 		redirectHandler.refreshOrigin();
 	}
 
-	static void updateAicUtils(MainConfig config)
+	static void updateAicUtils(MainConfig config) throws IOException
 	{
 		File aicUtils = new File(config.aicDir, "BepInEx/plugins/AicUtils.dll");
-		if (aicUtils.isFile())
+		InputStream is = Utils.readFromResources("AicUtils.dll", false);
+		byte[] b=Utils.readAllBytes(is);
+		byte[] b2=null;
+		if(aicUtils.isFile())
+			b2=Utils.readAllBytes(aicUtils);
+		is.close();
+		if (aicUtils.isFile()&&Arrays.equals(b,b2))
+		{
+			is.close();
 			return;
+		}
 		int chs = JOptionPane.showConfirmDialog(null, L10n.AICUTILS, L10n.AICUTILS_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if (chs != 0)
 			System.exit(8);
-		InputStream is = Utils.readFromResources("AicUtils.dll", false);
-		Utils.writeAllBytes(aicUtils, Utils.readAllBytes(is));
+		Utils.writeAllBytes(aicUtils, b);
+		is.close();
 	}
 
 	static void fixBepInEx(MainConfig config) throws Exception
