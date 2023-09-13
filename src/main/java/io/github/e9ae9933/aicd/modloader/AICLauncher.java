@@ -6,6 +6,8 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class AICLauncher
 {
@@ -20,6 +22,15 @@ public class AICLauncher
 		OptionSet optionSet=optionParser.parse(args);
 		boolean run=optionSet.has(runOption);
 		File dir=new File(optionSet.valueOf(dirOption));
+		FileOutputStream lock=null;
+		try
+		{
+			lock=new FileOutputStream(new File(dir, "session.lock"));
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 		if(optionSet.has(gitOption))
 		{
 			Git.targetGit=new File(optionSet.valueOf(gitOption));
@@ -40,6 +51,7 @@ public class AICLauncher
 			System.out.println("Force update");
 			needUpdate=true;
 		} else needUpdate=true;
+		//init
 		if(needUpdate)
 		{
 			System.out.println("Updating...");
@@ -50,7 +62,8 @@ public class AICLauncher
 			{
 				e.printStackTrace();
 				System.out.println("Update failed");
-				System.exit(1);
+//				System.exit(1);
+				return;
 			}
 		}
 		System.out.println("Launching...");

@@ -35,7 +35,7 @@ public class GUI
 		pane.setFont(middleFont);
 //		pane.addTab("登录",loginGUI.panel);
 		pane.addTab("下载",mainGUI.panel);
-		pane.addTab("模组",ModGUI.create(this,handler));
+//		pane.addTab("模组",ModGUI.create(this,handler));
 		pane.addTab("设置",SettingsGUI.create());
 		pane.addTab("说明",AboutGUI.create(handler));
 		pane.addTab("存档",ModifierGUI.create(main,frame));

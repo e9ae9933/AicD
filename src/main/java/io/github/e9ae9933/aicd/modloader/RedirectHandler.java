@@ -193,7 +193,7 @@ public class RedirectHandler implements FileUtils
 			Arrays.stream(getModsDir().listFiles())
 					.filter(f->f.isFile()&&f.getName().endsWith(".zip"))
 					.forEachOrdered(f->{
-						Utils.ignoreExceptions(()->{
+						try{
 							ZipFile file=new ZipFile(f);
 
 							if(file.getEntry("info.json")==null)
@@ -308,13 +308,20 @@ public class RedirectHandler implements FileUtils
 							}
 
 							file.close();
-						});
+						}catch (Exception e){
+							new RuntimeException("failed to load "+f.getName(),e).printStackTrace();
+							fails.add(f.getName());
+						};
 					});
 			if(fails.size()>0)
 			{
 				int chs=JOptionPane.showConfirmDialog(null, String.format(L10n.GIT_FAILED.toString(), fails.toString()),L10n.GIT_FAILED_TITLE.toString(), JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 				if(chs!=0)
+				{
+//					Thread.currentThread().stop();
 					throw new RuntimeException("User cancelled launching");
+//					Thread.currentThread().interrupt();
+				}
 			}
 			System.out.println("checking translations...");
 			trans.forEach(

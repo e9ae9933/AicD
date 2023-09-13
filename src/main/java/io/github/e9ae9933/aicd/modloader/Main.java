@@ -2,6 +2,7 @@ package io.github.e9ae9933.aicd.modloader;
 
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
+import io.github.e9ae9933.aicd.client.Daemon;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
@@ -137,7 +138,7 @@ public class Main implements FileUtils
 			e.printStackTrace();
 		}
 	}
-	static JFrame mainFrame=null;
+	static JDialog mainFrame=null;
 	static synchronized void refreshGUI(MainConfig config,RedirectHandler redirectHandler)
 	{
 		if(mainFrame!=null)
@@ -146,11 +147,20 @@ public class Main implements FileUtils
 		mainFrame=initGUI(config,redirectHandler);
 	}
 
-	static JFrame initGUI(MainConfig config, RedirectHandler redirectHandler)
+	static JDialog initGUI(MainConfig config, RedirectHandler redirectHandler)
 	{
-		JFrame frame = new JFrame(L10n.MAINTITLE.toString());
+		JDialog frame = new JDialog(Daemon.daemon);
+		frame.getParent();
+		frame.setTitle(L10n.MAINTITLE.toString());
 		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				System.exit(16);
+			}
+		});
 		JPanel panel = new JPanel(new FlowLayout());
 		panel.setPreferredSize(new Dimension(640, 360));
 		panel.setLayout(null);
@@ -214,6 +224,8 @@ public class Main implements FileUtils
 			{
 				mainFrame.dispose();
 				boolean ok=createNewMod(config, redirectHandler,frame);
+				if(!ok)
+					refreshGUI(config,redirectHandler);
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -239,6 +251,23 @@ public class Main implements FileUtils
 		});
 		panel.add(runButton);
 
+		JButton modButton=new JButton(L10n.MOD_BUTTON.toString());
+		modButton.setFont(getFont(16));
+		modButton.setLocation(scrollPane.getX() + scrollPane.getWidth() + 32, runButton.getY()+runButton.getHeight()+32);
+		modButton.setSize(modButton.getPreferredSize());
+		modButton.addActionListener(l->{
+			try
+			{
+				JOptionPane.showMessageDialog(null,L10n.MOD_BUTTON_TEXT);
+				Desktop.getDesktop().open(new File(config.aicDir,"mods"));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		});
+		panel.add(modButton);
+
 
 		frame.pack();
 		frame.setLocationRelativeTo(null);
@@ -250,7 +279,7 @@ public class Main implements FileUtils
 		boolean shouldRefresh=mainFrame!=null;
 		if(shouldRefresh)
 			mainFrame.dispose();
-		JDialog dialog=new JDialog();
+		JDialog dialog=new JDialog(Daemon.daemon);
 
 		dialog.setLocationRelativeTo(null);
 		JPanel panel=new JPanel();
@@ -305,7 +334,30 @@ public class Main implements FileUtils
 			{
 				long time=System.currentTimeMillis();
 				System.out.println("Running task "+task.toString());
-				task.run();
+				Thread tt=new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						task.run();
+					}
+
+					@Override
+					protected void finalize() throws Throwable
+					{
+						super.finalize();
+						//welp.
+						System.out.println("thread finalize");
+					}
+				});
+				tt.start();
+				while(tt.isAlive())Thread.yield();
+				//really useless. but why?
+				tt.stop();
+				//todo: this is really shit code that depends on GC
+				//welp.
+				tt=null;
+				System.gc();
 				System.out.println("Task end successfully");
 				long interval=System.currentTimeMillis()-time;
 				JOptionPane.showMessageDialog(null, String.format(L10n.TASK_SUCCESSFUL.toString(), String.format("%d:%02d.%03d",interval/60000,interval/1000%60,interval%1000)),L10n.TASK_SUCCESS_TITLE.toString(), JOptionPane.INFORMATION_MESSAGE);
@@ -345,7 +397,7 @@ public class Main implements FileUtils
 				},null);
 	}
 
-	static boolean createNewMod(MainConfig config, RedirectHandler redirectHandler,JFrame or)
+	static boolean createNewMod(MainConfig config, RedirectHandler redirectHandler,JDialog or)
 	{
 		String str = JOptionPane.showInputDialog(null, L10n.INPUT_MOD_NAME, L10n.INPUT_MOD_NAME_TITLE.toString(), JOptionPane.INFORMATION_MESSAGE);
 		if (str == null || str.isEmpty()) return false;

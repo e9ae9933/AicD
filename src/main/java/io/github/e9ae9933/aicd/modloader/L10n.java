@@ -1,5 +1,15 @@
 package io.github.e9ae9933.aicd.modloader;
 
+import io.github.e9ae9933.aicd.Policy;
+import io.github.e9ae9933.aicd.Utils;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+
 public enum L10n
 {
 	NO_AIC_DIR("未找到缓存的 AliceInCradle 路径。\n将要请求指定路径。"),NO_AIC_DIR_TITLE("未找到路径"),
@@ -39,7 +49,9 @@ public enum L10n
 	TASK_FAILED("看起来任务遇到了一些错误。\n您可以加入群聊 907348590 与我们联系，或者尝试自己解决。\n一些可能有用的信息：\n%s"),
 	TASK_FAILED_TITLE("发生错误"),
 	TASK_SUCCESSFUL("任务成功完成。\n耗时 %s"),TASK_SUCCESS_TITLE("任务成功"),
-	GIT_FAILED("这些模组应用可能失败了，并且它们可能不会正常运行：\n%s\n确定要继续吗？"),GIT_FAILED_TITLE("模组错误"),
+	GIT_FAILED("这些模组应用可能失败了，并且它们可能不会正常运行：\n%s\n可能无法启动 AIC，甚至可能导致存档读取和写入出现问题。\n确定要继续吗？"),GIT_FAILED_TITLE("模组错误"),
+	MOD_BUTTON("打开安装模组文件夹"),
+	MOD_BUTTON_TEXT("即将打开 mods 目录。\n把你下载到的模组放到里面，然后运行 AIC。"),
 	;
 	String cn;
 	L10n(String cn)
@@ -48,6 +60,50 @@ public enum L10n
 	}
 	public String toString()
 	{
-		return cn;
+		if(locale.equals("cn"))
+			return cn;
+		if(en==null)
+			return cn;
+		String rt=en.get(name());
+		if(rt==null)
+			return cn;
+		return rt;
+	}
+	public static String locale;
+	static Map<String,String> en=null;
+	static {
+		Locale loc=Locale.getDefault();
+		System.out.println("Country "+loc.getCountry());
+		String lang=loc.toLanguageTag();
+		System.out.println("lang "+lang);
+		if(lang.startsWith("zh")||lang.startsWith("ZH"))
+			locale="cn";
+		else locale="en";
+		String over=System.getProperty("aicutils_lang");
+		if(over!=null&&!over.isEmpty())
+		{
+			locale=over;
+		}
+//		locale="en";
+		try
+		{
+			InputStream is = Utils.readFromResources("en.yml", false);
+			en = (Map<String, String>) Policy.getLoad().loadFromString(Utils.readAllUTFString(is));
+			is.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}
+class Gen
+{
+	public static void main(String[] args)
+	{
+		Map<String,String> mp=new LinkedHashMap<>();
+		Arrays.stream(L10n.values()).forEach(l->mp.put(l.name(),l.cn));
+		String s=Policy.getDump().dumpToString(mp);
+		Utils.writeAllUTFString(new File("en.yml"),s);
 	}
 }

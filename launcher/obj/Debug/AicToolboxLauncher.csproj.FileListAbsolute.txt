@@ -1,0 +1,10 @@
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\bin\Debug\AicToolboxLauncher.exe.config
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\bin\Debug\AicToolboxLauncher.exe
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\bin\Debug\AicToolboxLauncher.pdb
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.csproj.AssemblyReference.cache
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.Resource.resources
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.csproj.GenerateResource.cache
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.csproj.CoreCompileInputs.cache
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.csproj.CopyComplete
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.exe
+C:\Users\Windowsredstone\IdeaProjects\AicD\launcher\obj\Debug\AicToolboxLauncher.pdb

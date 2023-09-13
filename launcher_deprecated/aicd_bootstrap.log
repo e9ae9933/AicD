@@ -1,0 +1,4 @@
+log test
+this is cmd line:
+jre\bin\java -jar AicD-all.jar 2>1 > aicd.log
+process end with 33

@@ -1,0 +1,7 @@
+start with System.Diagnostics.ProcessStartInfo
+[STDOUT] stdout test
+[STDOUT] received stdout test
+[STDERR] stderr test
+[STDERR] received stderr test
+[STDOUT] test
+exit with 3

@@ -82,4 +82,12 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>echo $(SolutionDir)
+copy $(SolutionDir)\..\build\libs\AicD-all.jar $(SolutionDir)\Resources\
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetFileName) Z:\</PostBuildEvent>
+  </PropertyGroup>
 </Project>

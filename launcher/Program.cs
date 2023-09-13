@@ -29,6 +29,8 @@ namespace AicToolboxLauncher
 					};
 				if (!File.Exists("aicd_resources/info.txt"))
 					initResources();
+				Directory.CreateDirectory("aicd_resources");
+				File.WriteAllBytes("aicd_resources/AicD-all.jar", Resource.AicD_all);
 				fslog = new FileStream("aicd_resources/aicd.log", FileMode.Create);
 				ProcessStartInfo info = new ProcessStartInfo();
 				info.CreateNoWindow = true;
@@ -40,7 +42,7 @@ namespace AicToolboxLauncher
 				info.UseShellExecute = false;
 				info.WorkingDirectory = "aicd_resources";
 				info.FileName = "aicd_resources/jre/bin/java.exe";
-				info.Arguments = "-Dfile.encoding=UTF-8 -Xmx512M -Xms512M -jar AicD-all.jar";
+				info.Arguments = "-Dfile.encoding=UTF-8 -jar AicD-all.jar";
 				receive("start with " + info.ToString() + "\n");
 				Process p = Process.Start(info);
 				p.OutputDataReceived += receiveOutput;
@@ -73,6 +75,7 @@ namespace AicToolboxLauncher
 			args=args.Trim();
 			if (args.Length <=8)
 				return;
+			Console.WriteLine(args);
 			byte[] b=UTF8Encoding.UTF8.GetBytes(args+"\n");
 			fslog.Write(b, 0, b.Length);
 		}
@@ -86,8 +89,6 @@ namespace AicToolboxLauncher
 		}
 		static void initResources()
 		{
-			Directory.CreateDirectory("aicd_resources");
-			File.WriteAllBytes("aicd_resources/AicD-all.jar", Resource.AicD_all);
 			MemoryStream ms = new MemoryStream(Resource.OpenJDK17U_jre_x64_windows_hotspot_17_0_8_7);
 			ZipInputStream zis = new ZipInputStream(ms);
 			ZipEntry ze;

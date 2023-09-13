@@ -1,0 +1,36 @@
+# Project: AicD_Launcher
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+RES      = main_private.res
+OBJ      = main.o the_main.o $(RES)
+LINKOBJ  = main.o the_main.o $(RES)
+LIBS     = -mwindows -static -m64 -g3
+INCS     = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/10.3.0/include"
+CXXINCS  = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++"
+BIN      = "AliceInCradle Toolbox Launcher.exe"
+CXXFLAGS = $(CXXINCS) -Og -m64 -std=c++11 -Wall -Wextra -pedantic -g3
+CFLAGS   = $(INCS) -Og -m64 -std=c++11 -Wall -Wextra -pedantic -g3
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+the_main.o: the_main.cpp
+	$(CPP) -c the_main.cpp -o the_main.o $(CXXFLAGS)
+
+main_private.res: main_private.rc 
+	$(WINDRES) -i main_private.rc --input-format=rc -o main_private.res -O coff 
+
