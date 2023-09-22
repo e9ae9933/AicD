@@ -302,26 +302,26 @@ list:
         type: object
         types:
 #          # todo: map raw data
-#          useless: byte
-          map_wm:
-            type: array
-            lensize: 1
-            value:
-              type: peek
-              len: 4
-              value:
-                type: array
-                lensize: 2
-                value: byte
-          # m2d wa
-          map_wa_sign_expected_1: byte
-          map_wa:
-            type: array
-            lensize: 1
-            value:
-              type: object
-              types:
-                key: pascal_string
+          useless: byte
+#          map_wm:
+#            type: array
+#            lensize: 1
+#            value:
+#              type: peek
+#              len: 4
+#              value:
+#                type: array
+#                lensize: 2
+#                value: byte
+#          # m2d wa
+#          map_wa_sign_expected_1: byte
+#          map_wa:
+#            type: array
+#            lensize: 1
+#            value:
+#              type: object
+#              types:
+#                key: pascal_string
     coin_data:
       type: array
       lensize: 4

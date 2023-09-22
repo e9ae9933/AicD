@@ -194,10 +194,10 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
-//		int chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+		int chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
 		if(Daemon.createDaemon()==null)
 			return;
-		int chs=0;
+//		int chs=0;
 		if(chs==0)
 		{
 			io.github.e9ae9933.aicd.modloader.Main.main(args);
@@ -208,6 +208,7 @@ public class Main
 //		JOptionPane.showMessageDialog(null,"" +
 //				"注意工具箱等待重构，模组功能被暂时关闭，且存档编辑功能仍在等待维护。目前只剩下了下载功能。\n" +
 //				"");
-//		new Main(args);
+		if(chs>0)
+		new Main(args);
 	}
 }

@@ -334,7 +334,7 @@ public class RedirectHandler implements FileUtils
 			File evfile=new File(getRedirectDir(),"event_translations.yml");
 			Utils.writeAllUTFString(evfile, Policy.getDump().dumpToString(multiLanguageFamilies));
 			System.out.println("rebuilding pxls...");
-			List<File> toBeRebuilt=Arrays.stream(getRedirectAssets().getPxlsUnpackedDir().listFiles())
+			List<File> toBeRebuilt=Arrays.stream(Objects.requireNonNull(getRedirectAssets().getPxlsUnpackedDir().listFiles(),"null "+getRedirectAssets().getPxlsUnpackedDir()))
 					.parallel()
 					.filter(f->f.isDirectory())
 					.filter(f->{
