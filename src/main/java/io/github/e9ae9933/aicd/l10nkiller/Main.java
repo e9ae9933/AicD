@@ -16,7 +16,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class test
 {
@@ -69,7 +71,8 @@ public class Main
 				catch (Exception e)
 				{
 					System.out.println("Failed on "+f.getPath());
-					e.printStackTrace();
+//					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			});
 		}
@@ -111,7 +114,15 @@ Scanner cin=new Scanner(str);
 				}
 				else if (s.startsWith("&&"))
 				{
-					cache.put(s.substring(2, s.indexOf(" ")), new StringBuilder(trim2(s.substring(s.indexOf(" ") + 1))));
+					String[] sss=split(s,2);
+					if(sss.length==1)
+					{
+						//??? thank you hashino mizuha
+						target=null;
+						continue;
+					}
+					//24a fix: why is there a tab???
+					cache.put(sss[0], new StringBuilder(trim2(sss[1])));
 					target=null;
 				}
 				else
@@ -124,11 +135,11 @@ Scanner cin=new Scanner(str);
 		catch (Exception e)
 		{
 			System.out.println("failed on something. "+s);
-			//for(int i=0;i<5;i++)
-			//	if(cin.hasNextLine())
-			//		System.out.println(cin.nextLine());
-			e.printStackTrace();
-			//throw new RuntimeException(e);
+			for(int i=0;i<5;i++)
+				if(cin.hasNextLine())
+					System.out.println(cin.nextLine());
+//			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		cache.forEach((ss,sb)->{
 			String value=sb.toString().replace("\\n","\n");
@@ -139,6 +150,10 @@ Scanner cin=new Scanner(str);
 	static String[] split(String s)
 	{
 		return s.split(reg);
+	}
+	static String[] split(String s,int l)
+	{
+		return s.split(reg,l);
 	}
 
 	static String trim2(String s)

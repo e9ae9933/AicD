@@ -20,6 +20,7 @@ public class Settings
 		tasksToBeDone.forEach(c->c.accept(this));
 	}
 	PxlCharacter target;
+	public byte[] exportPng;
 
 	Map<Pair<Integer,Double>, BufferedImage> idImage=new LinkedHashMap<>();
 

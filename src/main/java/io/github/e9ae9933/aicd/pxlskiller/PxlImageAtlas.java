@@ -30,7 +30,7 @@ public class PxlImageAtlas
 		}
 	}
 	Uv[] pos;
-	BufferedImage image;
+	transient BufferedImage image;
 	PxlImageAtlas(Uv[] pos,BufferedImage image)
 	{
 		this.pos=pos;
@@ -128,10 +128,12 @@ public class PxlImageAtlas
 			b.putInt(t.width);
 			b.putInt(t.height);
 		});
-		ByteArrayOutputStream bos=new ByteArrayOutputStream();
-		Utils.ignoreExceptions(()->{ImageIO.write(image,"png",bos);});
-		b.putSegment(bos.toByteArray());
-		Utils.ignoreExceptions(()->bos.close());
+//		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+//		Utils.ignoreExceptions(()->{ImageIO.write(image,"png",bos);});
+//		byte[] png=bos.toByteArray();
+//		b.putSegment(png);
+//		s.exportPng=png;
+//		Utils.ignoreExceptions(()->bos.close());
 		return b;
 	}
 	@Deprecated

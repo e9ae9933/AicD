@@ -1,10 +1,14 @@
 package io.github.e9ae9933.aicd.pxlskiller;
 
+import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.NoelByteBuffer;
 import io.github.e9ae9933.aicd.Pair;
+import io.github.e9ae9933.aicd.Policy;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,10 +25,16 @@ public class PxlCharacter
 		s.target=this;
 		List<File> f=Arrays.stream(dir.listFiles()).filter(ff->ff.isDirectory()).collect(Collectors.toList());
 		//break them down
-		f.sort(Comparator.comparingDouble(ff->breakDown(ff)));
+		f.sort(Comparator.comparing(ff->ff.getName()));
 		poses=new PxlPose[f.size()];
 		for(int i=0;i<f.size();i++)
 			poses[i]=PxlPose.breakDown(f.get(i),s);
+		Arrays.sort(poses,Comparator.comparingDouble(p->p.priority));
+		build(dir,s);
+	}
+	private void build(File dir,Settings s)
+	{
+
 		List<Pair<Integer,Double>> idList=new ArrayList<>();
 		List<BufferedImage> imageList=new ArrayList<>();
 		s.idImage.entrySet().stream().forEachOrdered(
@@ -33,11 +43,43 @@ public class PxlCharacter
 					imageList.add(e.getValue());
 				}
 		);
+		idList.add(new Pair<>(-1,-1.0));
+
+		{
+//			String json=Policy.getGson().toJson(this);
+			int w=640,h=360/2;
+			BufferedImage bi=new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g=bi.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
+			g.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_SPEED);
+			g.setColor(Color.WHITE);
+			g.fillRect(0,0,w,h);
+			g.setColor(Color.BLACK);
+			g.fillRect(8,8,w-8-8,h-8-8);
+			g.setFont(Constants.unifont.deriveFont(16.0f));
+			g.setColor(Color.WHITE);
+			StringJoiner sj=new StringJoiner("\n");
+			sj.add("AicD "+Constants.version+" "+Constants.versionCode);
+			sj.add("java "+System.getProperty("java.runtime.version"));
+			sj.add("name "+dir.getName());
+			sj.add("size "+s.idImage.size());
+			sj.add("with "+poses.length+" poses");
+//			sj.add("json length "+json.length());
+			int y=32;
+			for(String ss:sj.toString().split("\n"))
+			{
+				g.drawString(ss,32,y);
+				y+=16;
+			}
+			imageList.add(bi);
+		}
+
 		RectPackingAtlas[] packing=new RectPackingAtlas[1];
 		List<Pair<Integer,Integer>> coords=RectPackingAtlas.getBestOne(imageList.stream().map(image->new Pair<>(image.getWidth(),image.getHeight())).collect(Collectors.toList()), packing);
 		RectPackingAtlas atlas=packing[0];
 		BufferedImage image=new BufferedImage(atlas.width,atlas.height,BufferedImage.TYPE_INT_ARGB);
-		int n=s.idImage.size();
+		int n=idList.size();
 		Graphics2D g= (Graphics2D) image.getGraphics();
 		for(int i=0;i<n;i++)
 			g.drawImage(imageList.get(i),coords.get(i).first,coords.get(i).second,null);
@@ -53,20 +95,28 @@ public class PxlCharacter
 					imageList.get(i).getWidth(),
 					imageList.get(i).getHeight()
 			);
+		try(ByteArrayOutputStream baos=new ByteArrayOutputStream()){
+			ImageIO.write(image,"png",baos);
+			s.exportPng=baos.toByteArray();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 
 	}
-	double breakDown(File dir)
-	{try
-	{
-		String s = dir.getName();
-		return Double.parseDouble(s.split("_", 3)[1]);
-	}
-	catch (Exception e)
-	{
-		e.printStackTrace();
-	}
-	return -1;
-	}
+//	double breakDown(File dir)
+//	{try
+//	{
+//		String s = dir.getName();
+//		return Double.parseDouble(s.split("_", 3)[1]);
+//	}
+//	catch (Exception e)
+//	{
+//		e.printStackTrace();
+//	}
+//	return -1;
+//	}
 	public PxlCharacter(NoelByteBuffer b, Settings s)
 	{
 		s.tasksToBeDone.clear();
@@ -128,8 +178,9 @@ public class PxlCharacter
 					for(int i=0;i<n;i++)
 					{
 						//System.out.println("Reading pose "+i);
-						poses[i]=new PxlPose(target,s,this);
+						poses[i]=new PxlPose(target,s,i,this);
 					}
+					Arrays.sort(poses,Comparator.comparingDouble(p->p.priority));
 					break;
 				}
 				default:
@@ -165,6 +216,10 @@ public class PxlCharacter
 		Settings s=new Settings();
 		return output(s).getAllBytes();
 	}
+	public byte[] outputAsBytes(Settings s)
+	{
+		return output(s).getAllBytes();
+	}
 	public void export(File dir,Settings s) throws Exception
 	{
 		dir.mkdirs();
@@ -177,9 +232,10 @@ public class PxlCharacter
 			});
 		});
 		s.idMap=map;
+//		Arrays.sort(poses,Comparator.comparingDouble(p->p.priority));
 		for (int i = 0; i < poses.length; i++)
 		{
-			poses[i].export(new File(dir, String.format("pose_%d_%s", i,poses[i].title)),s);
+			poses[i].export(new File(dir, String.format("pose_%s",poses[i].title)),s);
 		}
 	}
 }

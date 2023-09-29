@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -334,12 +335,20 @@ public class Main implements FileUtils
 			{
 				long time=System.currentTimeMillis();
 				System.out.println("Running task "+task.toString());
+				AtomicReference<Throwable> th=new AtomicReference<>();
 				Thread tt=new Thread(new Runnable()
 				{
 					@Override
 					public void run()
 					{
-						task.run();
+						try
+						{
+							task.run();
+						}
+						catch (Throwable e)
+						{
+							th.set(e);
+						}
 					}
 
 					@Override
@@ -353,11 +362,24 @@ public class Main implements FileUtils
 				tt.start();
 				while(tt.isAlive())Thread.yield();
 				//really useless. but why?
-				tt.stop();
+//				tt.stop();
 				//todo: this is really shit code that depends on GC
 				//welp.
 				tt=null;
 				System.gc();
+				if(th.get()!=null)
+					throw new RuntimeException(th.get());
+				if(th.get()!=null)
+				{
+					StringWriter sw=new StringWriter();
+					PrintWriter pw=new PrintWriter(sw);
+					th.get().printStackTrace(pw);
+					pw.close();
+					sw.close();
+					String str=sw.toString();
+					JOptionPane.showMessageDialog(null, String.format(L10n.TASK_FAILED.toString(), str),L10n.TASK_FAILED.toString(),JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				System.out.println("Task end successfully");
 				long interval=System.currentTimeMillis()-time;
 				JOptionPane.showMessageDialog(null, String.format(L10n.TASK_SUCCESSFUL.toString(), String.format("%d:%02d.%03d",interval/60000,interval/1000%60,interval%1000)),L10n.TASK_SUCCESS_TITLE.toString(), JOptionPane.INFORMATION_MESSAGE);
@@ -516,7 +538,13 @@ public class Main implements FileUtils
 			try
 			{
 				BufferedImage image = ImageIO.read(new File(dir, "pack.png"));
-				ImageIcon icon = new ImageIcon(image.getScaledInstance(iconLabel.getWidth(), iconLabel.getHeight(), Image.SCALE_FAST));
+				int w=image.getWidth(),h=image.getHeight();
+				int mx=Math.max(w,h);
+				Image target;
+				if(mx>64)
+					target=image.getScaledInstance(w*64/mx,h*64/mx,Image.SCALE_SMOOTH);
+				else target=image;
+				ImageIcon icon = new ImageIcon(target);
 				iconLabel.setIcon(icon);
 			} catch (Exception e)
 			{
@@ -613,7 +641,7 @@ public class Main implements FileUtils
 	{
 		if (redirectHandler.getRedirectInfoFile().isFile())
 			return;
-		int chs = JOptionPane.showConfirmDialog(null, L10n.REDIRECT, L10n.REDIRECT_TITLE.toString(), JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+		int chs = JOptionPane.showConfirmDialog(null, L10n.REDIRECT, L10n.REDIRECT_TITLE.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 		if (chs != 0)
 			System.exit(10);
 		AtomicBoolean ended=new AtomicBoolean(false);

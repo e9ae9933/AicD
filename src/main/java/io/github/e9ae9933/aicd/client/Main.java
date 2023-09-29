@@ -194,7 +194,9 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
-		int chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+		int chs=0;
+		chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+//		int chs=0;
 		if(Daemon.createDaemon()==null)
 			return;
 //		int chs=0;

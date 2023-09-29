@@ -3,7 +3,6 @@ package io.github.e9ae9933.aicd.modloader;
 import com.google.gson.reflect.TypeToken;
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
-import io.github.e9ae9933.aicd.l10nkiller.EventLoader;
 import io.github.e9ae9933.aicd.l10nkiller.MultiLanguageFamilies;
 import io.github.e9ae9933.aicd.l10nkiller.RefreshedEventLoader;
 import io.github.e9ae9933.aicd.pxlskiller.PxlCharacter;
@@ -105,14 +104,17 @@ public class RedirectHandler implements FileUtils
 							"--noExtra"
 					}
 			);
-			assets.gitInit();
 			getRedirectPxlsPackedDir().mkdirs();
-			io.github.e9ae9933.aicd.pxlskiller.Rev.main(
+			io.github.e9ae9933.aicd.pxlskiller.Rev.handle(
 					new String[]{
 							"--output",getRedirectPxlsPackedDir().getAbsolutePath(),
 							"--dir",assets.getPxlsUnpackedDir().getAbsolutePath()
-					}
+					},new File(getRedirectAssetsDir(),"Texture2D")
 			);
+			//todo: WHY??? so much memory
+			System.gc();
+			//
+			assets.gitInit();
 			getOriginalTranslationsDir().mkdirs();
 			io.github.e9ae9933.aicd.l10nkiller.Main.main(
 					new String[]{
@@ -147,8 +149,10 @@ public class RedirectHandler implements FileUtils
 	{
 		Utils.writeAllUTFString(new File(getWorkDir(),"refreshOrigin"),"refreshOrigin");
 		Utils.ignoreExceptions(()->{
-			Process aic = Runtime.getRuntime().exec(new File(aicDir, "AliceInCradle.exe").getAbsolutePath());
-			int rt=aic.waitFor();
+//			Process aic = Runtime.getRuntime().exec(new File(aicDir, "AliceInCradle.exe").getAbsolutePath(),null,);
+			File dir=aicDir;
+			Process p=Runtime.getRuntime().exec(new File(dir,"AliceInCradle.exe").getAbsolutePath(), null, dir);
+			int rt=p.waitFor();
 			System.out.println("aic returned "+rt);
 		});
 	}
@@ -360,7 +364,10 @@ public class RedirectHandler implements FileUtils
 						System.out.println("output "+f);
 						Settings s=new Settings();
 						PxlCharacter chara=new PxlCharacter(f,s);
-						Utils.writeAllBytes(new File(getRedirectPxlsPackedDir(),f.getName()+".pxls"),chara.outputAsBytes());
+						Utils.writeAllBytes(new File(getRedirectPxlsPackedDir(),f.getName()+".pxls"),chara.outputAsBytes(new Settings()));
+						File t2d=new File(getRedirectAssetsDir(),"Texture2D");
+						File target=new File(t2d,f.getName()+".pxls.bytes.texture_0.png");
+						Utils.writeAllBytes(target,s.exportPng);
 						System.out.println("okay output "+f);
 					});
 			File specialPatch=new File(getRedirectAssets().getTextAssetDir(),"__tx_list");

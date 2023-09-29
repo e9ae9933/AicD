@@ -23,9 +23,10 @@ public class PxlPose
 	String[] aliasTo;
 	String comment;
 	transient PxlSequence[] sequences;
+	double priority;
 	byte useless;
 	transient PxlCharacter fa;
-	PxlPose(NoelByteBuffer b,Settings s,PxlCharacter fa)
+	PxlPose(NoelByteBuffer b,Settings s,double priority,PxlCharacter fa)
 	{
 		this.fa=fa;
 		NoelByteBuffer target=b.getSegment();
@@ -42,6 +43,7 @@ public class PxlPose
 		//for(int i=0;i<num2;i++)
 		for(int i=0;i<num2;i++)
 			aliasTo[i]=target.getUTFString();
+		this.priority=priority;
 		if(useless>=2)
 			comment=target.getUTFString();
 		int num3;
@@ -82,7 +84,8 @@ public class PxlPose
 		PxlPose rt=s.gson.fromJson(new String(Utils.readAllBytes(new File(dir,"info.json")),StandardCharsets.UTF_8),PxlPose.class);
 		List<File> f= Arrays.stream(dir.listFiles()).filter(ff->ff.isDirectory()).collect(Collectors.toList());
 		//break them down
-		f.sort(Comparator.comparingDouble(ff->Double.parseDouble(ff.getName().split("_", 3)[1])));
+		f.sort(Comparator.comparing(ff->ff.getName()));
+//		f.sort(Comparator.comparingDouble(ff->Double.parseDouble(ff.getName().split("_", 3)[1])));
 		rt.sequences=new PxlSequence[f.size()];
 		for(int i=0;i<f.size();i++)
 			rt.sequences[i]=PxlSequence.breakDown(f.get(i),s);

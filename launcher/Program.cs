@@ -62,7 +62,7 @@ namespace AicToolboxLauncher
 		static void show(Exception e)
 		{
 			MessageBox.Show(
-				"Something went wrong.\nDo you have the permission to the current directory?\n" + e,
+				"Something went wrong.\nDo you have the permission to the current directory?\nOr maybe you have launched another modloader." + e,
 				"Error",
 				MessageBoxButtons.OK,
 				MessageBoxIcon.Error,

@@ -23,7 +23,7 @@ public enum L10n
 	AICUTILS("未找到有效 AicUtils。\n需要为您自动安装吗？"),AICUTILS_TITLE("未找到 AicUtils"),
 	UNPACK("将要进行必要操作：自动解包。\n这可能需要几分钟，请不要关闭即将弹出的 AliceInCradle 窗口。"),UNPACK_TITLE("未找到有效解包"),
 	REDIRECT("将要进行必要操作：资源处理。\n这可能需要几分钟甚至几十分钟！\n请耐心等待……"),REDIRECT_TITLE("未找到有效资源"),
-	MAINTITLE("模组选择"),
+	MAINTITLE("模组选择 (for 0.24a)"),
 	INITIALIZING("正在初始化……"),
 	NO_AUTHOR("无作者信息"),
 	BUILD("构建模组"),

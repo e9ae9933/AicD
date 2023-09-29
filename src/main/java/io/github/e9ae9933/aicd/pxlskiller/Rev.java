@@ -1,6 +1,7 @@
 package io.github.e9ae9933.aicd.pxlskiller;
 
 import io.github.e9ae9933.aicd.Pair;
+import io.github.e9ae9933.aicd.Utils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -20,25 +21,8 @@ import java.util.stream.Collectors;
 
 public class Rev
 {
-	public static void main(String[] args) throws Exception
+	public static void handle(String[] args,File textureDir) throws Exception
 	{
-		/*
-		System.out.println("Max memory "+Runtime.getRuntime().maxMemory()/1048576.0+" MB");
-		Font font=null;
-		InputStream is=Utils.readFromResources("unifont-15.0.06.otf",false);
-		font=Font.createFont(Font.TRUETYPE_FONT,is);
-		Settings s=new Settings();
-		s.idImage=new LinkedHashMap<>();
-		PxlCharacter chara=new PxlCharacter(new File("F:\\work\\master\\pxls\\noel"),s);
-		ImageIO.write(chara.atlases[0].image,"png",new File("testimg.png"));
-		FileOutputStream fos=new FileOutputStream("noel.pxls");
-		fos.write(chara.outputAsBytes());
-		fos.close();
-		PxlCharacter character=new PxlCharacter(chara.output(new Settings()),new Settings());
-		NoelByteBuffer.endAll();
-		character.export(new File("export"),new Settings());*/
-
-		//args="--dir F:\\work\\master\\pxls --output F:\\test".split(" ");
 		long time=System.currentTimeMillis();
 		System.out.println("Process start with args "+args.length+" "+Arrays.toString(args));
 		OptionParser optionParser=new OptionParser();
@@ -52,34 +36,36 @@ public class Rev
 		if(outputDir.isDirectory()&&pxlsDir.isDirectory())
 		{
 			int n=Runtime.getRuntime().availableProcessors();
-			ExecutorService service= Executors.newFixedThreadPool(n);
-			System.out.println("Launch with "+n+" thread(s)");
-			for(File dirDir:pxlsDir.listFiles())
+//			ExecutorService service= Executors.newFixedThreadPool(n);
+//			System.out.println("Launch with "+n+" thread(s)");
+			Arrays.stream(pxlsDir.listFiles()).collect(Collectors.toList())
+					.parallelStream()
+					.filter(File::isDirectory).forEach(dirDir ->
 			{
-				if (!dirDir.isDirectory()) continue;
-				service.execute(() ->
+				System.out.println((System.currentTimeMillis() - time) + " " + Thread.currentThread().getName() + " started with dir " + dirDir.getPath());
+				try
 				{
-					System.out.println((System.currentTimeMillis() - time) + " " + Thread.currentThread().getName() + " started with dir " + dirDir.getPath());
-					try
-					{
-						Settings s=new Settings();
-						//s.shouldDelete=shouldDelete;
-						PxlCharacter chara=new PxlCharacter(dirDir,s);
-						byte[] b=chara.outputAsBytes();
-						FileOutputStream fos=new FileOutputStream(new File(outputDir,dirDir.getName()+".pxls"));
-						fos.write(b);
-						fos.close();
-						System.out.println("finished "+dirDir);
-					}
-					catch (Exception e)
-					{
-						System.out.println("failed on "+dirDir);
-						e.printStackTrace();
-					}
-				});
-			}
-			service.shutdown();
-			while(!service.isTerminated())Thread.sleep(1);
+					Settings s = new Settings();
+					//s.shouldDelete=shouldDelete;
+					PxlCharacter chara = new PxlCharacter(dirDir, s);
+					byte[] b = chara.outputAsBytes();
+					FileOutputStream fos = new FileOutputStream(new File(outputDir, dirDir.getName() + ".pxls"));
+					fos.write(b);
+					fos.close();
+
+					byte[] png = s.exportPng;
+					File target = new File(textureDir, dirDir.getName() + ".pxls.bytes.texture_0.png");
+					Utils.writeAllBytes(target, png);
+
+					System.out.println("finished " + dirDir);
+				} catch (Exception e)
+				{
+					System.out.println("failed on " + dirDir);
+					throw new RuntimeException(e);
+				}
+			});
+//			service.shutdown();
+//			while(!service.isTerminated())Thread.sleep(1);
 			System.out.println("Service terminated");
 			System.out.println("Time used "+(System.currentTimeMillis()-time)+" ms");
 		}
