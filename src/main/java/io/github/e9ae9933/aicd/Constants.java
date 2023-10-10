@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 public class Constants
 {
+	public static boolean shouldWeHandlePxls=true;
 	public static String version="1.3";
 	public static int versionCode=4;
 	public static String versionUrl="https://aicd-1259776053.cos.ap-beijing.myqcloud.com/AicD-all.jar";

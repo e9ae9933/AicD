@@ -22,6 +22,8 @@ public class PxlCharacter
 	PxlImageAtlas[] atlases;
 	public PxlCharacter(File dir,Settings s)
 	{
+		if(!Constants.shouldWeHandlePxls)
+			return;
 		s.target=this;
 		List<File> f=Arrays.stream(dir.listFiles()).filter(ff->ff.isDirectory()).collect(Collectors.toList());
 		//break them down
@@ -119,6 +121,8 @@ public class PxlCharacter
 //	}
 	public PxlCharacter(NoelByteBuffer b, Settings s)
 	{
+		if(!Constants.shouldWeHandlePxls)
+			return;
 		s.tasksToBeDone.clear();
 		// header
 		if(b.getInt()!=2000791807)
@@ -222,6 +226,8 @@ public class PxlCharacter
 	}
 	public void export(File dir,Settings s) throws Exception
 	{
+		if(!Constants.shouldWeHandlePxls)
+			return;
 		dir.mkdirs();
 		Map<Pair<Integer,Double>,Pair<PxlImageAtlas, PxlImageAtlas.Uv>> map=new LinkedHashMap<>();
 		Arrays.stream(atlases).forEach(a->{

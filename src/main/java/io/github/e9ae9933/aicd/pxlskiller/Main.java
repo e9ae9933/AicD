@@ -1,5 +1,6 @@
 package io.github.e9ae9933.aicd.pxlskiller;
 
+import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.NoelByteBuffer;
 import io.github.e9ae9933.aicd.Utils;
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -7,6 +8,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +45,11 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
+		if(!Constants.shouldWeHandlePxls)
+		{
+			JOptionPane.showMessageDialog(null,"pxls 控制被跳过。","非兼容模式",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 		long time = System.currentTimeMillis();
 		System.out.println("Process start with args " + args.length + " " + Arrays.toString(args));
 		OptionParser optionParser = new OptionParser();

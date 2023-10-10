@@ -196,10 +196,13 @@ public class Main
 	{
 		int chs=0;
 		chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
-//		int chs=0;
+//		int chs2=JOptionPane.showConfirmDialog(null,"兼容模式\n选择否可能导致种种问题的发生。","Deprecated",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+//		if(chs2==-1)
+//			return;
+//		if(chs2==JOptionPane.NO_OPTION)
+//			Constants.shouldWeHandlePxls=false;
 		if(Daemon.createDaemon()==null)
 			return;
-//		int chs=0;
 		if(chs==0)
 		{
 			io.github.e9ae9933.aicd.modloader.Main.main(args);
@@ -207,9 +210,6 @@ public class Main
 		}
 		if(chs==-1)System.exit(17);
 		if(chs==-1) return;
-//		JOptionPane.showMessageDialog(null,"" +
-//				"注意工具箱等待重构，模组功能被暂时关闭，且存档编辑功能仍在等待维护。目前只剩下了下载功能。\n" +
-//				"");
 		if(chs>0)
 		new Main(args);
 	}

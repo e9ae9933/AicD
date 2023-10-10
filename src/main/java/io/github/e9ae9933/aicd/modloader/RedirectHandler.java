@@ -1,6 +1,7 @@
 package io.github.e9ae9933.aicd.modloader;
 
 import com.google.gson.reflect.TypeToken;
+import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.Policy;
 import io.github.e9ae9933.aicd.Utils;
 import io.github.e9ae9933.aicd.l10nkiller.MultiLanguageFamilies;
@@ -218,7 +219,7 @@ public class RedirectHandler implements FileUtils
 								while(cin.hasNextLine())
 								{
 									String s=cin.nextLine();
-									if(s.startsWith("diff --git "))
+									if(s.startsWith("diff --git ")&&Constants.shouldWeHandlePxls)
 									{
 										//wowie
 										String r=s.substring(11);
@@ -270,7 +271,7 @@ public class RedirectHandler implements FileUtils
 										"apply",
 //										"--index",
 										"--binary",
-//										"-3",
+										"-3",
 										"--allow-empty",
 										"-v",
 										temp.getAbsolutePath()
@@ -337,39 +338,49 @@ public class RedirectHandler implements FileUtils
 			System.out.println("event translations writing");
 			File evfile=new File(getRedirectDir(),"event_translations.yml");
 			Utils.writeAllUTFString(evfile, Policy.getDump().dumpToString(multiLanguageFamilies));
-			System.out.println("rebuilding pxls...");
-			List<File> toBeRebuilt=Arrays.stream(Objects.requireNonNull(getRedirectAssets().getPxlsUnpackedDir().listFiles(),"null "+getRedirectAssets().getPxlsUnpackedDir()))
-					.parallel()
-					.filter(f->f.isDirectory())
-					.filter(f->{
-						String original=info.pxlsUnpackedCache.originalMD5.get(f.getName());
-						if(original==null)
-							return true;//new one
-						return !original.equals(md5Dir(f));
-					}).collect(Collectors.toList());
-			List<File> changedPxls=info.pxlsCache.getChangedFiles(getRedirectPxlsPackedDir());
-			System.out.println("changed pxls: "+changedPxls);
-			changedPxls.stream().parallel()
-							.forEach(f->{
-								File target=new File(getRedirectAssets().getPxlsUnpackedDir(),f.getName().substring(0,f.getName().length()-5));
-								f.delete();
-								if(target.exists())
-									toBeRebuilt.add(target);
-							});
-			System.out.println("to be rebuilt: "+toBeRebuilt.stream().distinct().collect(Collectors.toList()));
-			toBeRebuilt.stream()
-					.distinct()
-					.parallel()
-					.forEach(f->{
-						System.out.println("output "+f);
-						Settings s=new Settings();
-						PxlCharacter chara=new PxlCharacter(f,s);
-						Utils.writeAllBytes(new File(getRedirectPxlsPackedDir(),f.getName()+".pxls"),chara.outputAsBytes(new Settings()));
-						File t2d=new File(getRedirectAssetsDir(),"Texture2D");
-						File target=new File(t2d,f.getName()+".pxls.bytes.texture_0.png");
-						Utils.writeAllBytes(target,s.exportPng);
-						System.out.println("okay output "+f);
-					});
+			if(!Constants.shouldWeHandlePxls)
+			{
+
+			}
+			else
+			{
+				System.out.println("rebuilding pxls...");
+				List<File> toBeRebuilt = Arrays.stream(Objects.requireNonNull(getRedirectAssets().getPxlsUnpackedDir().listFiles(), "null " + getRedirectAssets().getPxlsUnpackedDir()))
+						.parallel()
+						.filter(f -> f.isDirectory())
+						.filter(f ->
+						{
+							String original = info.pxlsUnpackedCache.originalMD5.get(f.getName());
+							if (original == null)
+								return true;//new one
+							return !original.equals(md5Dir(f));
+						}).collect(Collectors.toList());
+				List<File> changedPxls = info.pxlsCache.getChangedFiles(getRedirectPxlsPackedDir());
+				System.out.println("changed pxls: " + changedPxls);
+				changedPxls.stream().parallel()
+						.forEach(f ->
+						{
+							File target = new File(getRedirectAssets().getPxlsUnpackedDir(), f.getName().substring(0, f.getName().length() - 5));
+							f.delete();
+							if (target.exists())
+								toBeRebuilt.add(target);
+						});
+				System.out.println("to be rebuilt: " + toBeRebuilt.stream().distinct().collect(Collectors.toList()));
+				toBeRebuilt.stream()
+						.distinct()
+						.parallel()
+						.forEach(f ->
+						{
+							System.out.println("output " + f);
+							Settings s = new Settings();
+							PxlCharacter chara = new PxlCharacter(f, s);
+							Utils.writeAllBytes(new File(getRedirectPxlsPackedDir(), f.getName() + ".pxls"), chara.outputAsBytes(new Settings()));
+							File t2d = new File(getRedirectAssetsDir(), "Texture2D");
+							File target = new File(t2d, f.getName() + ".pxls.bytes.texture_0.png");
+							Utils.writeAllBytes(target, s.exportPng);
+							System.out.println("okay output " + f);
+						});
+			}
 			File specialPatch=new File(getRedirectAssets().getTextAssetDir(),"__tx_list");
 			Utils.writeAllUTFString(specialPatch,"_aicutils_translation");
 			System.out.println("reading info");

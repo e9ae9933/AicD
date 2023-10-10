@@ -1,7 +1,9 @@
 package io.github.e9ae9933.aicd.modloader;
 
+import io.github.e9ae9933.aicd.Constants;
 import io.github.e9ae9933.aicd.Utils;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -31,6 +33,11 @@ public class Git
 //	int call(OutputStream redirectStdout,OutputStream RedirectStderr String... args)
 	int call(String... args)
 	{
+//		if(!Constants.shouldWeHandlePxls)
+//		{
+//			JOptionPane.showMessageDialog(null,"git 被跳过。（非兼容模式）\n可能导致种种问题。","警告",JOptionPane.WARNING_MESSAGE);
+//			return 0;
+//		}
 		return Utils.ignoreExceptions(()->
 		{
 			long time=System.currentTimeMillis();
