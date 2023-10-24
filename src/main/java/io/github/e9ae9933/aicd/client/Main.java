@@ -195,7 +195,7 @@ public class Main
 	public static void main(String[] args) throws Exception
 	{
 		int chs=0;
-		chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+//		chs=JOptionPane.showConfirmDialog(null,"是否运行模组开发者模式？\nWill you run mod developer mode?\n開発者モードを実行していますか?",null,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
 //		int chs2=JOptionPane.showConfirmDialog(null,"兼容模式\n选择否可能导致种种问题的发生。","Deprecated",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 //		if(chs2==-1)
 //			return;
