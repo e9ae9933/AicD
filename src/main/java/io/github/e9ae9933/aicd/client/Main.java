@@ -201,8 +201,8 @@ public class Main
 //			return;
 //		if(chs2==JOptionPane.NO_OPTION)
 //			Constants.shouldWeHandlePxls=false;
-		if(Daemon.createDaemon()==null)
-			return;
+//		if(Daemon.createDaemon()==null)
+//			return;
 		if(chs==0)
 		{
 			io.github.e9ae9933.aicd.modloader.Main.main(args);

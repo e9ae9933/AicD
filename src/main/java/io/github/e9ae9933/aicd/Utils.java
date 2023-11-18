@@ -202,7 +202,7 @@ public class Utils
 		public T get() throws Exception;
 	}
 	@FunctionalInterface
-	public interface ConsumerWithExceptions
+	public interface ConsumerWithExceptions<T>
 	{
 		public void accept() throws Exception;
 	}

@@ -376,7 +376,7 @@ public class RedirectHandler implements FileUtils
 							PxlCharacter chara = new PxlCharacter(f, s);
 							Utils.writeAllBytes(new File(getRedirectPxlsPackedDir(), f.getName() + ".pxls"), chara.outputAsBytes(new Settings()));
 							File t2d = new File(getRedirectAssetsDir(), "Texture2D");
-							File target = new File(t2d, f.getName() + ".pxls.bytes.texture_0.png");
+							File target = new File(t2d, f.getName() + ".pxls.texture_0.png");
 							Utils.writeAllBytes(target, s.exportPng);
 							System.out.println("okay output " + f);
 						});

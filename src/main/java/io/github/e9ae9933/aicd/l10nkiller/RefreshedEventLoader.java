@@ -8,15 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-class test3
-{
-	public static void main(String[] args)
-	{
-		MultiLanguageFamilies mlf=RefreshedEventLoader.loadWholeFromAIC(new File("F:\\"));
-		MultiLanguageFamilies mlf2=RefreshedEventLoader.loadMultiLanguageFamiliesFromDir(new File("test3"));
-		System.out.println(mlf.diff(mlf2));
-	}
-}
+
 public class RefreshedEventLoader
 {
 	public static MultiLanguageFamilies loadMultiLanguageFamiliesFromDir(File dir)
@@ -70,7 +62,7 @@ public class RefreshedEventLoader
 		return rt;
 	}
 
-	private static Family loadFamilyFromAIC(File file)
+	public static Family loadFamilyFromAIC(File file)
 	{
 		try
 		{
@@ -90,6 +82,7 @@ public class RefreshedEventLoader
 				else if (s.startsWith("*")/* && s.substring(1).split(" ").length <= 2*/&&s.lastIndexOf("*")==0)
 				{
 					String[] split = s.substring(1).split(" ");
+//					System.out.println("split into "+Arrays.toString(split));
 					if(split.length>2||split.length==0)
 					{
 						System.err.println("WARNING: found "+s);
@@ -100,9 +93,17 @@ public class RefreshedEventLoader
 						targetEvent.put(split[0], message);
 					else if (split.length == 2)
 					{
-						targetEvent = new SingleEvent();
-						targetEvent.put(split[1], message);
-						rt.put(split[0], targetEvent);
+						if(!rt.containsKey(split[0]))
+						{
+							targetEvent = new SingleEvent();
+							targetEvent.put(split[1], message);
+							rt.put(split[0], targetEvent);
+						}
+						else {
+							targetEvent = rt.get(split[0]);
+							targetEvent.put(split[1], message);
+//							rt.put(split[0], targetEvent);
+						}
 					}
 				} else if (message.get(message.size() - 1) == null)
 					message.set(message.size() - 1, s);
@@ -130,6 +131,18 @@ public class RefreshedEventLoader
 				String str = Policy.getDump().dumpToString(single);
 				Utils.writeAllUTFString(target, str);
 			});
+		});
+	}
+	public static void writeFamilyToDir(File familyDir, Family f)
+	{
+		familyDir.mkdirs();
+		f.forEach(1, (k, e) ->
+		{
+			File target = new File(familyDir, "ev_" + k.replace("/", "_") + ".yml");
+			Family single = new Family();
+			single.put(k, e);
+			String str = Policy.getDump().dumpToString(single);
+			Utils.writeAllUTFString(target, str);
 		});
 	}
 

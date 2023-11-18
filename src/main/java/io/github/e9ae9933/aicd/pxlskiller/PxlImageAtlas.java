@@ -66,7 +66,7 @@ public class PxlImageAtlas
 				int height = b.getInt();
 				//todo: load texture
 				try{
-					File png=new File(s.externalResourcesDir, String.format(s.pxlsName + ".bytes.texture_%d.png", id));
+					File png=new File(s.externalResourcesDir, String.format(s.pxlsName + ".texture_%d.png", id));
 					//System.out.println("load from "+png);
 					FileInputStream fis=new FileInputStream(png);
 					image=ImageIO.read(fis);

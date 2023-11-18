@@ -93,6 +93,6 @@ public class Policy
 
 	public static Dump getDump()
 	{
-		return new Dump(DumpSettings.builder().setDumpComments(true).setUseUnicodeEncoding(true).build());
+		return new Dump(DumpSettings.builder().setIndentWithIndicator(true).setIndicatorIndent(2).setIndent(2).setDumpComments(true).setUseUnicodeEncoding(true).build());
 	}
 }

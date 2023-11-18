@@ -54,7 +54,7 @@ public class Rev
 					fos.close();
 
 					byte[] png = s.exportPng;
-					File target = new File(textureDir, dirDir.getName() + ".pxls.bytes.texture_0.png");
+					File target = new File(textureDir, dirDir.getName() + ".pxls.texture_0.png");
 					Utils.writeAllBytes(target, png);
 
 					System.out.println("finished " + dirDir);

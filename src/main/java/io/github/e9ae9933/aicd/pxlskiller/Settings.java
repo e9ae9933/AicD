@@ -26,9 +26,10 @@ public class Settings
 
 
 	Gson gson= Policy.getGson();
-	File externalResourcesDir;
-	String pxlsName;
-	boolean shouldDelete=false;
-	boolean writeExtra=false;
+	public File externalResourcesDir;
+	public String pxlsName;
+	public boolean shouldDelete=false;
+	public boolean writeExtra=false;
+	public byte[] customHeader=null;
 	Random random=new Random();
 }

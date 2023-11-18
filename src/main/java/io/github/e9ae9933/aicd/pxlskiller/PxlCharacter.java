@@ -198,9 +198,14 @@ public class PxlCharacter
 	{
 		s.target=this;
 		NoelByteBuffer b=new NoelByteBuffer();
-		b.putInt(2000791807);
-		b.putBytes("PXLS".getBytes(StandardCharsets.UTF_8));
-		b.putBytes("%PACK_SECTION%".getBytes(StandardCharsets.UTF_8));
+		if(s.customHeader!=null)
+			b.putBytes(s.customHeader);
+		else
+		{
+			b.putInt(2000791807);
+			b.putBytes("PXLS".getBytes(StandardCharsets.UTF_8));
+			b.putBytes("%PACK_SECTION%".getBytes(StandardCharsets.UTF_8));
+		}
 		NoelByteBuffer target1=new NoelByteBuffer();
 		{
 			target1.putInt(atlases.length);

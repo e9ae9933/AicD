@@ -4,6 +4,7 @@ import io.github.e9ae9933.aicd.Utils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.apache.commons.lang3.Validate;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 
@@ -20,13 +21,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class test
-{
-	public static void main(String[] args) throws Exception
-	{
-		Main.main("--dir F:\\AliceInCradle_Data\\StreamingAssets\\localization --list F:\\work\\master\\TextAsset\\__tx_list --output .".split(" "));
-	}
-}
 public class Main
 {
 	public static void main(String[] args) throws Exception
@@ -39,6 +33,9 @@ public class Main
 		File dirDir= new File(optionSet.valueOf(dir));
 		File listFile=new File(optionSet.valueOf(list));
 		File outputDir=new File(optionSet.valueOf(output));
+		Validate.isTrue(dirDir.isDirectory());
+		Validate.isTrue(listFile.isFile());
+		Validate.isTrue(outputDir.isDirectory());
 		if(dirDir.isDirectory()&&listFile.isFile()&&outputDir.isDirectory())
 		{
 			List<String> pending=Arrays.stream(getString(listFile).split("\n")).map(s->s.trim()).collect(Collectors.toList());
