@@ -17,6 +17,8 @@ namespace AicToolboxLauncher
 		{
 			try
 			{
+				FileStream fs = new FileStream("session1.lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+				fs.Lock(0, 0);
 				AppDomain.CurrentDomain.AssemblyResolve +=
 					(sender, args2) =>
 					{
@@ -31,28 +33,13 @@ namespace AicToolboxLauncher
 					initResources();
 				Directory.CreateDirectory("aicd_resources");
 				File.WriteAllBytes("aicd_resources/AicD-all.jar", Resource.AicD_all);
-				fslog = new FileStream("aicd_resources/aicd.log", FileMode.Create);
 				ProcessStartInfo info = new ProcessStartInfo();
 				info.CreateNoWindow = true;
-				info.RedirectStandardOutput = true;
-				info.RedirectStandardError = true;
-				info.StandardOutputEncoding = Encoding.UTF8;
-				info.StandardErrorEncoding = Encoding.UTF8;
-				//info.StandardErrorEncoding = Encoding.UTF8;
 				info.UseShellExecute = false;
-				info.WorkingDirectory = "aicd_resources";
+				info.WorkingDirectory = ".";
 				info.FileName = "aicd_resources/jre/bin/java.exe";
 				info.Arguments = "-Dfile.encoding=UTF-8 -jar AicD-all.jar";
-				receive("start with " + info.ToString() + "\n");
 				Process p = Process.Start(info);
-				p.OutputDataReceived += receiveOutput;
-				p.ErrorDataReceived += receiveError;
-				p.BeginOutputReadLine();
-				p.BeginErrorReadLine();
-				p.WaitForExit();
-				int rt3 = p.ExitCode;
-				receive("exit with " + rt3 + "\n");
-				fslog.Close();
 			}
 			catch(Exception e)
 			{
@@ -63,29 +50,11 @@ namespace AicToolboxLauncher
 		{
 			MessageBox.Show(
 				"Something went wrong.\nDo you have the permission to the current directory?\nOr maybe you have launched another modloader." + e,
-				"Error",
+				"错误",
 				MessageBoxButtons.OK,
 				MessageBoxIcon.Error,
 				MessageBoxDefaultButton.Button1
 				);
-		}
-		static FileStream fslog;
-		static void receive(string args)
-		{
-			args=args.Trim();
-			if (args.Length <=8)
-				return;
-			Console.WriteLine(args);
-			byte[] b=UTF8Encoding.UTF8.GetBytes(args+"\n");
-			fslog.Write(b, 0, b.Length);
-		}
-		static void receiveOutput(object obj,DataReceivedEventArgs args)
-		{
-			receive("[STDOUT] "+args.Data);
-		}
-		static void receiveError(object obj, DataReceivedEventArgs args)
-		{
-			receive("[STDERR] " + args.Data);
 		}
 		static void initResources()
 		{

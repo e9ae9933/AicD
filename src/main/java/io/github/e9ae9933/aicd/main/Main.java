@@ -26,11 +26,16 @@ public class Main
 			args-> Utils.ignoreExceptions(()->PxlsMain.main((String[]) args)),
 			args-> Utils.ignoreExceptions(()-> io.github.e9ae9933.aicd.client.Main.main((String[]) args)),
 	};
+	static void redirectLogs() throws Exception
+	{
+		SystemLogger.logAll();
+	}
 	public static void main(String[] args) throws Exception
 	{
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			redirectLogs();
 		}
 		catch (Exception e)
 		{
@@ -40,6 +45,7 @@ public class Main
 		OptionSpecBuilder ikwid=parser.accepts("IKnowWhatImDoing");
 		OptionSet set=parser.parse(args);
 
+		System.out.println("Arguments: "+set.asMap());//gp
 		if(!set.has(ikwid))
 			checkAicIsHere();
 		Daemon.createDaemon();
