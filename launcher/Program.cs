@@ -38,7 +38,7 @@ namespace AicToolboxLauncher
 				info.UseShellExecute = false;
 				info.WorkingDirectory = ".";
 				info.FileName = "aicd_resources/jre/bin/java.exe";
-				info.Arguments = "-Dfile.encoding=UTF-8 -jar AicD-all.jar";
+				info.Arguments = "-Dfile.encoding=UTF-8 -jar aicd_resources/AicD-all.jar";
 				Process p = Process.Start(info);
 			}
 			catch(Exception e)

@@ -18,9 +18,12 @@ public class InstallerMain
 		while((entry=zis.getNextEntry())!=null)
 		{
 			String name=entry.getName();
+			System.out.println("target "+name);
 			if(entry.isDirectory())
 				new File(name).mkdirs();
 			else {
+				File parent=new File(name).getParentFile();
+				if(parent!=null)parent.mkdirs();
 				FileOutputStream fos=new FileOutputStream(name);
 				int len;
 				byte[] b=new byte[1024];

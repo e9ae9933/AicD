@@ -111,9 +111,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\AicD-all.jar" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="bin\Debug\ICSharpCode.SharpZipLib.dll" />
     <Content Include="icon.ico" />
   </ItemGroup>
@@ -126,11 +123,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>echo $(SolutionDir)
+    <PreBuildEvent>echo here is $(SolutionDir)
+del $(SolutionDir)\Resources\AicD-all.jar
 copy $(SolutionDir)\..\build\libs\AicD-all.jar $(SolutionDir)\Resources\
-</PreBuildEvent>
+echo copied</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetFileName) H:\</PostBuildEvent>
+    <PostBuildEvent>del H:\AicToolboxLauncher.exe
+copy $(TargetFileName) H:\</PostBuildEvent>
   </PropertyGroup>
 </Project>
