@@ -106,7 +106,7 @@ Scanner cin=new Scanner(str);
 					cache.put(split(s)[1], target = new StringBuilder());
 				else if (s.startsWith("%ITEM") || s.startsWith("%ITEMREEL") || s.startsWith("%RECIPE_REPLACE"))
 				{
-					cache.put(split(s)[0] + " " + split(s)[1], new StringBuilder(split(s).length >= 3 ? split(s)[2] : ""));
+					cache.put(split(s,3)[0] + " " + split(s,3)[1], new StringBuilder(split(s,3).length >= 3 ? split(s,3)[2] : ""));
 					target=null;
 				}
 				else if (s.startsWith("&&"))
