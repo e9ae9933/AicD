@@ -15,7 +15,7 @@ public class L10nMain
 	public static void main(String[] args) throws Exception
 	{
 		JFileChooser c=new JFileChooser();
-		c.setCurrentDirectory(new File("."));
+		c.setCurrentDirectory(new File(""));
 		c.setFileFilter(new FileFilter()
 		{
 			@Override
@@ -35,8 +35,8 @@ public class L10nMain
 		c.showDialog(null,null);
 		File aic=c.getSelectedFile().getParentFile();
 
-		Validate.isTrue(new File(aic,"redirect").isDirectory(),"redirect folder  not found");
-		File l10n=new File(aic,"redirect/l10n");
+		Validate.isTrue(new File(aic,"AliceInCradle_Data/direct_resources").isDirectory(),"redirect folder  not found");
+		File l10n=new File(aic,"AliceInCradle_Data/aicutils_l10n");
 //		Validate.isTrue(l10n.listFiles()==null||l10n.listFiles().length==0,l10n+" exists and not blank");
 		l10n.mkdir();
 		handleEv(aic);
@@ -45,14 +45,14 @@ public class L10nMain
 	static void handleTx(File dir) throws Exception
 	{
 		Main.main(new String[]{
-				"--list",new File(dir,"redirect/__tx_list").getAbsolutePath(),
+				"--list",new File(dir,"AliceInCradle_Data/direct_resources/__tx_list").getAbsolutePath(),
 				"--dir",new File(dir,"AliceInCradle_Data/StreamingAssets/localization").getAbsolutePath(),
-				"--output",new File(dir.getAbsolutePath()+"/redirect/l10n").getAbsolutePath()
+				"--output",new File(dir,"AliceInCradle_Data/aicutils_l10n").getAbsolutePath()
 		});
 	}
 	static void handleEv(File dir) throws Exception
 	{
 		MultiLanguageFamilies mlf=RefreshedEventLoader.loadWholeFromAIC(dir);
-		RefreshedEventLoader.writeMultiLanguageFamiliesToDir(new File(dir,"redirect/l10n"),mlf);
+		RefreshedEventLoader.writeMultiLanguageFamiliesToDir(new File(dir,"AliceInCradle_Data/aicutils_l10n"),mlf);
 	}
 }

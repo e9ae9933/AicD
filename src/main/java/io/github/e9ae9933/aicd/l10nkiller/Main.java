@@ -78,7 +78,7 @@ public class Main
 	static void destruct(List<String> pending,LinkedHashMap<String,String> trans,File dir,File def,String name)
 	{
 		pending.stream()
-				.map(s->s.startsWith("!")?new File(def,name+s.substring(1)+".txt"):new File(dir,name+s+".txt"))
+				.map(s->s.startsWith("!")?new File(def,"_"+s.substring(1)+".txt"):new File(dir,name+s+".txt"))
 				.forEach(f->{
 					//System.out.println("reading "+f.getPath());
 					String str=getString(f);

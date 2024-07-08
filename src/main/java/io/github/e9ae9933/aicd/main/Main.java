@@ -18,13 +18,14 @@ public class Main
 {
 	static int count=4;
 	static String[] options=new String[]{
-		"安装重定向工具","翻译初始化","图像初始化","（弃用）模组制作器"
+		"翻译初始化",
+		"图像初始化"
 	};
 	static Consumer[] ops=new Consumer[]{
-			args-> Utils.ignoreExceptions(()->InstallerMain.main((String[]) args)),
+//			args-> Utils.ignoreExceptions(()->InstallerMain.main((String[]) args)),
 			args-> Utils.ignoreExceptions(()->L10nMain.main((String[]) args)),
 			args-> Utils.ignoreExceptions(()->PxlsMain.main((String[]) args)),
-			args-> Utils.ignoreExceptions(()-> io.github.e9ae9933.aicd.client.Main.main((String[]) args)),
+//			args-> Utils.ignoreExceptions(()-> io.github.e9ae9933.aicd.client.Main.main((String[]) args)),
 	};
 	static void redirectLogs() throws Exception
 	{
@@ -46,8 +47,8 @@ public class Main
 		OptionSet set=parser.parse(args);
 
 		System.out.println("Arguments: "+set.asMap());//gp
-		if(!set.has(ikwid))
-			checkAicIsHere();
+//		if(!set.has(ikwid))
+//			checkAicIsHere();
 		Daemon.createDaemon();
 		int op=JOptionPane.showOptionDialog(null,"选择目标。","AIC 工具箱",JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,null,
 				options,null);

@@ -19,7 +19,7 @@ public class PxlCharacter
 {
 	//List<PxlImage> images=new ArrayList<>();
 	PxlPose[] poses;
-	PxlImageAtlas[] atlases;
+	public PxlImageAtlas[] atlases;
 	public PxlCharacter(File dir,Settings s)
 	{
 		if(!Constants.shouldWeHandlePxls)
@@ -185,6 +185,12 @@ public class PxlCharacter
 						poses[i]=new PxlPose(target,s,i,this);
 					}
 					Arrays.sort(poses,Comparator.comparingDouble(p->p.priority));
+					break;
+				}
+				case "%PTCL_SECTION%":
+				{
+					NoelByteBuffer target=b.getSegment();
+//					Utils.warning("以来丢弃 %d 字节的 PTCL_SECTION 颜色数据。\n这将会造成数据丢失。".formatted(target.size()));
 					break;
 				}
 				default:

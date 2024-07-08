@@ -9,13 +9,14 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class PxlsMain
 {
 	public static void main(String[] args) throws Exception
 	{
 		JFileChooser c=new JFileChooser();
-		c.setCurrentDirectory(new File("."));
+		c.setCurrentDirectory(new File(""));
 		c.setFileFilter(new FileFilter()
 		{
 			@Override
@@ -34,11 +35,19 @@ public class PxlsMain
 		c.setMultiSelectionEnabled(true);
 		c.showDialog(null,null);
 		File[] files=c.getSelectedFiles();
-		for(File file:files)
-			handle(file);
+//		filess
+		Arrays.stream(files).parallel()
+				.forEach(file->{
+					handle(file)
+//					handle(file);
+					//handlke()
+				;});
+//		for(File file:files)
+//			handle(file);
 	}
 	static void handle(File file)
 	{
+		System.out.println("[%s] file %s start".formatted(Thread.currentThread().getName(),file.getName()));
 		NoelByteBuffer b=new NoelByteBuffer(Utils.readAllBytes(file));
 		Settings s=new Settings();
 		s.pxlsName=file.getName();
@@ -46,6 +55,11 @@ public class PxlsMain
 		s.customHeader="konnna_syarinn_no_saikaihatsu_ha_okashii_by_cloba_u".getBytes(StandardCharsets.UTF_8);
 		PxlCharacter character=new PxlCharacter(b,s);
 		byte[] out=character.outputAsBytes();
-		Utils.writeAllBytes(new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 1)),out);
+		File fileName;
+		if(file.getName().endsWith(".pxls"))
+			fileName=new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 1));
+			else fileName=new File(file.getAbsolutePath()+".pxl");//.)
+		Utils.writeAllBytes(fileName,out);
+		System.out.println("[%s] file %s end".formatted(Thread.currentThread().getName(),file.getName()));
 	}
 }

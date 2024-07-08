@@ -30,7 +30,7 @@ public class PxlImageAtlas
 		}
 	}
 	Uv[] pos;
-	transient BufferedImage image;
+	public transient BufferedImage image;
 	PxlImageAtlas(Uv[] pos,BufferedImage image)
 	{
 		this.pos=pos;
@@ -67,6 +67,14 @@ public class PxlImageAtlas
 				//todo: load texture
 				try{
 					File png=new File(s.externalResourcesDir, String.format(s.pxlsName + ".texture_%d.png", id));
+					if(!png.exists())
+					{
+						if(s.pxlsName.startsWith("TextAsset_"))//_)//s"))
+						{
+							png=new File(s.externalResourcesDir,
+									String.format(s.pxlsName.replaceFirst("TextAsset_","Texture_") + ".texture_%d.png", id));
+						}
+					}
 					//System.out.println("load from "+png);
 					FileInputStream fis=new FileInputStream(png);
 					image=ImageIO.read(fis);
